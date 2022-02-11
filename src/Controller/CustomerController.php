@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Customer;
+use App\Repository\CustomerRepository;
 use App\Form\RegistrationFormType;
+use App\Form\CustomerEditForm;
 use App\Form\CustomerLoginForm;
 use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
@@ -15,6 +17,7 @@ use Symfony\Component\Mime\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class CustomerController extends AbstractController {
 
@@ -27,28 +30,32 @@ class CustomerController extends AbstractController {
     /**
      * @Route("/customer", name="customer")
      */
-    public function index(): Response {
-
-        return $this->render('customer/index.html.twig', [
-                    'controller_name' => 'CustomerController',
-        ]);
+    public function index(CustomerRepository $customerRepository, SessionInterface $session): Response {
+        $customer = $this->getCustomer($customerRepository, $session);
+        if (empty($customer)) {
+            return $this->redirectToRoute('customer_login');
+        }
+        return $this->render('customer/index.html.twig');
     }
 
     /**
      * @Route("/customer/login", name="customer_login")
      */
-    public function login(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response {
-        $user = new Customer();
-        $form = $this->createForm(CustomerLoginForm::class, $user);
+    public function login(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, SessionInterface $session): Response {
+        $customer = new Customer();
+        $form = $this->createForm(CustomerLoginForm::class, $customer);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            // encode the plain password
-            $user->setPassword(
-                    $userPasswordHasher->hashPassword(
-                            $user,
-                            $form->get('plainPassword')->getData()
-                    )
+            $email = $form->get('email')->getData();
+            $password = $userPasswordHasher->hashPassword(
+                    $customer,
+                    $form->get('plainPassword')->getData()
             );
+            $customerLogin = $entityManager->getManager()->getRepository(Customer::class)->findOneBy(['email' => $email, 'password' => $password]);
+            if (!empty($customerLogin) && $customerLogin->id > 0) {
+                $session->set('userid', $customerLogin->id);
+                return $this->redirectToRoute('customer');
+            }
         }
         return $this->render('customer/login.html.twig', [
                     'loginForm' => $form->createView(),
@@ -120,6 +127,35 @@ class CustomerController extends AbstractController {
         $this->addFlash('success', 'Your email address has been verified.');
 
         return $this->redirectToRoute('customer_register');
+    }
+
+    /**
+     * @Route("/customer/edit/profile", name="customer_edit_profile")
+     */
+    public function edit(Request $request, CustomerRepository $customerRepository, SessionInterface $session): Response {
+        $customer = $this->getCustomer($customerRepository, $session);
+        if (empty($customer)) {
+            return $this->redirectToRoute('customer_login');
+        }
+
+        $form = $this->createForm(CustomerEditForm::class, $customer);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            return $this->redirectToRoute('customer_login');
+        }
+
+        return $this->render('customer/editprofile.html.twig', [
+                    'customer' => $customer
+        ]);
+    }
+
+    private function getCustomer(CustomerRepository $customerRepository, SessionInterface $session) {
+        $userid = $session->get('userid');
+        $customer = null;
+        if (empty($userid) || ( $customer = $customerRepository->find($userid)) == null) {
+            return null;
+        }
+        return $customer;
     }
 
 }

@@ -10,12 +10,78 @@
     <h1>Register</h1>
 
     {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.email) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
-        {{ form_row(registrationForm.agreeTerms) }}
+    <div class="form-group"> 
+        {{ form_label (registrationForm.email) }}
+        <div class="col-md-8"> 
+            {{ form_widget(registrationForm.email) }}
+        </div>
+    </div>
 
-        <button type="submit" class="btn">Register</button>
+
+    <div class="form-group"> 
+        {{ form_label (registrationForm.plainPassword) }}
+        <div class="col-md-8"> 
+            {{ form_widget(registrationForm.plainPassword) }}
+        </div>
+    </div>
+    <div class="form-group"> 
+        {{ form_label (registrationForm.firstName) }}
+        <div class="col-md-8"> 
+            {{ form_widget(registrationForm.firstName) }}
+        </div>
+    </div>
+    <div class="form-group"> 
+        {{ form_label (registrationForm.lastName) }}
+        <div class="col-md-8"> 
+            {{ form_widget(registrationForm.lastName) }}
+        </div>
+    </div>
+    <div class="form-group"> 
+        {{ form_label (registrationForm.address) }}
+        <div class="col-md-8"> 
+            {{ form_widget(registrationForm.address) }}
+        </div>
+    </div>
+    <div class="form-group"> 
+        {{ form_label (registrationForm.address2) }}
+        <div class="col-md-8"> 
+            {{ form_widget(registrationForm.address2) }}
+        </div>
+    </div>
+    <div class="form-group"> 
+        {{ form_label (registrationForm.phone) }}
+        <div class="col-md-8"> 
+            {{ form_widget(registrationForm.phone) }}
+        </div>
+    </div>
+    <div class="form-group"> 
+        {{ form_label (registrationForm.city) }}
+        <div class="col-md-8"> 
+            {{ form_widget(registrationForm.city) }}
+        </div>
+    </div>
+    <div class="form-group"> 
+        {{ form_label (registrationForm.state) }}
+        <div class="col-md-8"> 
+            {{ form_widget(registrationForm.state) }}
+        </div>
+    </div>
+    <div class="form-group"> 
+        {{ form_label (registrationForm.zipcode) }}
+        <div class="col-md-8"> 
+            {{ form_widget(registrationForm.zipcode) }}
+        </div>
+    </div>
+    <div class="form-group"> 
+        {{ form_label (registrationForm.additionalInfo) }}
+        <div class="col-md-8"> 
+            {{ form_widget(registrationForm.additionalInfo) }}
+        </div>
+    </div>
+ <div class="form-group"> 
+
+    {{ form_row(registrationForm.agreeTerms) }}
+ </div>
+    <button type="submit" class="btn btn-primary">Register</button>
     {{ form_end(registrationForm) }}
 {% endblock %}

@@ -19,6 +19,12 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+    admin.customer:
+        class: App\Admin\CustomerAdmin
+        tags:
+            - {name: sonata.admin, model_class: App\Entity\Customer, manager_type: orm, label: Customer}
+        calls:
+            - [ setContainer, [ '@service_container' ] ]
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

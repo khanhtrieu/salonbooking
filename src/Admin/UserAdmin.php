@@ -6,14 +6,13 @@
  * and open the template in the editor.
  */
 
+namespace App\Admin;
+
 /**
- * Description of CustomerAdmin
+ * Description of UserAdmin
  *
  * @author trieu
  */
-
-namespace App\Admin;
-
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
@@ -25,7 +24,7 @@ use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use App\Entity\Customer;
 
-class CustomerAdmin extends AbstractAdmin {
+class UserAdmin extends AbstractAdmin {
 
     private $container;
 
@@ -36,39 +35,16 @@ class CustomerAdmin extends AbstractAdmin {
         }
         $form->add('email', TextType::class);
         $form->add('plainPassword', PasswordType::class, ['mapped' => false, 'required' => $requirePassword]);
-        $form->add('firstName', TextType::class, ['required' => true]);
-        $form->add('lastName', TextType::class, ['required' => true]);
-        $form->add('address', TextType::class, ['required' => false]);
-        $form->add('address2', TextType::class, ['required' => false]);
-        $form->add('phone', TextType::class, ['required' => false]);
-        $form->add('city', TextType::class, ['required' => false]);
-        $form->add('state', TextType::class, ['required' => false]);
-        $form->add('zipcode', TextType::class, ['required' => false]);
+
     }
 
     protected function configureDatagridFilters(DatagridMapper $datagrid): void {
         $datagrid->add('email');
-        $datagrid->add('firstName');
-        $datagrid->add('lastName');
-        $datagrid->add('address');
-        $datagrid->add('address2');
-        $datagrid->add('phone');
-        $datagrid->add('city');
-        $datagrid->add('state');
-        $datagrid->add('zipcode');
     }
 
     protected function configureListFields(ListMapper $list): void {
         $list->addIdentifier('id', null, ['route' => ['name' => 'edit']]);
         $list->addIdentifier('email', null, ['route' => ['name' => 'edit']]);
-        $list->add('firstName');
-        $list->add('lastName');
-        $list->add('address');
-        $list->add('address2');
-        $list->add('phone');
-        $list->add('city');
-        $list->add('state');
-        $list->add('zipcode');
     }
 
     protected function preUpdate(object $object): void {

@@ -1,11 +1,13 @@
-<div>
-    <a href="{{ url('customer_login')}}">
-        <i class="material-icons">person</i>
-        Login/Signup
-    </a>
-    <a href="{{ url('customer_logout') }}">
-        Logout
-    </a>
-   
+<div class="row">
 
+    {% if app.session.get('userid') > 0  %}
+        <a href="{{ url('customer_logout') }}">
+            Logout
+        </a>
+    {% else %}
+        <a href="{{ url('customer_login')}}">
+            <i class="material-icons">person</i>
+            Login/Signup
+        </a>
+    {% endif %}
 </div>

@@ -2,13 +2,32 @@
 
 {% block title %}Customer{% endblock %}
 
-{% block content %}
+{% block body %}
     <div class="container">
-        <ul>
-            <li><a href="{{ url('customer_edit_profile') }}"><i class="material-icons">people</i> Edit Profile</a></li>
-            <li><a href="#"><i class="material-icons">history</i> Edit Profile</a></li>
-            <li><a href="#"><i class="material-icons">book_online</i> Appointment</a></li>
-            <li><a href="{{ url('customer_logout') }}"><i class="material-icons">logout</i> Logout</a></li>
-        </ul>
+        <div class="row">
+            <div class="col-md-3"> 
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-text">
+                            <a href="{{ url('customer_edit_profile') }}" "><i class="material-icons">people</i> Edit Profile</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <a href="#"><i class="material-icons">history</i> Edit Profile</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <a href="#"><i class="material-icons">book_online</i> Appointment</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock %}

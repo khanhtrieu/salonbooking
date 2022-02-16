@@ -6,7 +6,11 @@
 
 
     <h1>Login</h1>
-
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger">
+            {{ message }}
+        </div>
+    {% endfor %}
     {{ form_start(loginForm) }}
     {{ form_row(loginForm.email) }}
     {{ form_row(loginForm.plainPassword, {

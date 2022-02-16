@@ -42,19 +42,19 @@ class CustomerController extends AbstractController {
      * @Route("/customer/login", name="customer_login")
      */
     public function login(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, SessionInterface $session): Response {
-        $customer = new Customer();
-        $form = $this->createForm(CustomerLoginForm::class, $customer);
+
+        $form = $this->createForm(CustomerLoginForm::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $email = $form->get('email')->getData();
-            $password = $userPasswordHasher->hashPassword(
-                    $customer,
-                    $form->get('plainPassword')->getData()
-            );
-            $customerLogin = $entityManager->getManager()->getRepository(Customer::class)->findOneBy(['email' => $email, 'password' => $password]);
-            if (!empty($customerLogin) && $customerLogin->id > 0) {
-                $session->set('userid', $customerLogin->id);
+            $password = $form->get('plainPassword')->getData();
+
+            $customerLogin = $entityManager->getRepository(Customer::class)->findOneBy(['email' => $email, 'isVerified' => true]);
+            if (!empty($customerLogin) && $customerLogin->getId() > 0 && $userPasswordHasher->isPasswordValid($customerLogin, $password)) {
+                $session->set('userid', $customerLogin->getId());
                 return $this->redirectToRoute('customer');
+            } else {
+                $this->addFlash('error', 'Invalid Email or Password');
             }
         }
         return $this->render('customer/login.html.twig', [
@@ -65,10 +65,9 @@ class CustomerController extends AbstractController {
     /**
      * @Route("/customer/logout", name="customer_logout")
      */
-    public function logout(): Response {
-        return $this->render('customer/logout.html.twig', [
-                    'controller_name' => 'CustomerController',
-        ]);
+    public function logout(SessionInterface $session): Response {
+        $session->remove('userid');
+        return $this->redirectToRoute('customer_login');
     }
 
     /**
@@ -78,7 +77,6 @@ class CustomerController extends AbstractController {
         $user = new Customer();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
             // encode the plain password
             $user->setPassword(
@@ -92,13 +90,13 @@ class CustomerController extends AbstractController {
             $entityManager->flush();
 
             // generate a signed url and email it to the user
-            $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
-                    (new TemplatedEmail())
-                            ->from(new Address('trieu181989@gmail.com', 'Webmaster'))
-                            ->to($user->getEmail())
-                            ->subject('Please Confirm your Email')
-                            ->htmlTemplate('customer/confirmation_email.html.twig')
-            );
+//            $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
+//                    (new TemplatedEmail())
+//                            ->from(new Address('test@gmail.com', 'Webmaster'))
+//                            ->to($user->getEmail())
+//                            ->subject('Please Confirm your Email')
+//                            ->htmlTemplate('customer/confirmation_email.html.twig')
+//            );
             // do anything else you need here, like send an email
 
             return $this->redirectToRoute('customer');

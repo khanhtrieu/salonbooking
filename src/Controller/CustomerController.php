@@ -42,7 +42,9 @@ class CustomerController extends AbstractController {
      * @Route("/customer/login", name="customer_login")
      */
     public function login(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, SessionInterface $session): Response {
-
+        if ($session->get('userid') > 0) {
+            return $this->redirectToRoute('customer');
+        }
         $form = $this->createForm(CustomerLoginForm::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {

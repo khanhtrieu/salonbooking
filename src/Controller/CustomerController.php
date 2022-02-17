@@ -169,7 +169,7 @@ class CustomerController extends AbstractController {
     /**
      * @Route("/customer/edit/password", name="customer_edit_password")
      */
-    public function changePassword(Request $request, CustomerRepository $customerRepository,EntityManagerInterface $entityManager, SessionInterface $session): Response {
+    public function changePassword(Request $request, CustomerRepository $customerRepository,EntityManagerInterface $entityManager, SessionInterface $session,UserPasswordHasherInterface $userPasswordHasher): Response {
         $customer = $this->getCustomer($customerRepository, $session);
         if (empty($customer)) {
             return $this->redirectToRoute('customer_login');
@@ -179,11 +179,22 @@ class CustomerController extends AbstractController {
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
-            // var_dump($customer);
+            $email = $form->get('email')->getData();
+            $password = $form->get('oldPassword')->getData();
+            $customerLogin = $entityManager->getRepository(Customer::class)->findOneBy(['email' => $email, 'isVerified' => true]);
+            if ($userPasswordHasher->isPasswordValid($customerLogin, $password))
+            {
+                $customer->setPassword(
+                    $userPasswordHasher->hashPassword(
+                            $customer,
+                            $form->get('newPassword')->getData()
+                    )
+            );
+                $entityManager->flush();
+                $this->addFlash('success', 'Your password has been reset!');
+            }
             
-            //$entityManager->persist($customer);
-            $entityManager->flush();
-            return $this->redirectToRoute('customer_edit_profile');
+            return $this->redirectToRoute('customer_edit_password');
         }
 
 

@@ -6,6 +6,7 @@ use App\Entity\Customer;
 use App\Repository\CustomerRepository;
 use App\Form\RegistrationFormType;
 use App\Form\CustomerEditForm;
+use App\Form\ChangePasswordForm;
 use App\Form\CustomerLoginForm;
 use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
@@ -132,7 +133,7 @@ class CustomerController extends AbstractController {
     /**
      * @Route("/customer/edit/profile", name="customer_edit_profile")
      */
-    public function edit(Request $request, CustomerRepository $customerRepository, SessionInterface $session): Response {
+    public function edit(Request $request, CustomerRepository $customerRepository,EntityManagerInterface $entityManager, SessionInterface $session): Response {
         $customer = $this->getCustomer($customerRepository, $session);
         if (empty($customer)) {
             return $this->redirectToRoute('customer_login');
@@ -140,12 +141,56 @@ class CustomerController extends AbstractController {
 
         $form = $this->createForm(CustomerEditForm::class, $customer);
         $form->handleRequest($request);
+        
         if ($form->isSubmitted() && $form->isValid()) {
+            // var_dump($customer);
+            $customer->setFirstName($form->get('firstName')->getData());
+            $customer->setLastName($form->get('lastName')->getData());
+            $customer->setAddress($form->get('address')->getData());
+            $customer->setAddress2($form->get('address2')->getData());
+            $customer->setPhone($form->get('phone')->getData());
+            $customer->setCity($form->get('city')->getData());
+            $customer->setState($form->get('state')->getData());
+            $customer->setZipcode($form->get('zipcode')->getData());
+            $customer->setAdditionalInfo($form->get('additionalInfo')->getData());
+            //$entityManager->persist($customer);
+            $entityManager->flush();
+            return $this->redirectToRoute('customer_edit_profile');
+        }
+
+
+
+        return $this->render('customer/editprofile.html.twig', [
+                    'customer' => $customer,
+                    'editForm' => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route("/customer/edit/password", name="customer_edit_password")
+     */
+    public function changePassword(Request $request, CustomerRepository $customerRepository,EntityManagerInterface $entityManager, SessionInterface $session): Response {
+        $customer = $this->getCustomer($customerRepository, $session);
+        if (empty($customer)) {
             return $this->redirectToRoute('customer_login');
         }
 
-        return $this->render('customer/editprofile.html.twig', [
-                    'customer' => $customer
+        $form = $this->createForm(ChangePasswordForm::class, $customer);
+        $form->handleRequest($request);
+        
+        if ($form->isSubmitted() && $form->isValid()) {
+            // var_dump($customer);
+            
+            //$entityManager->persist($customer);
+            $entityManager->flush();
+            return $this->redirectToRoute('customer_edit_profile');
+        }
+
+
+
+        return $this->render('customer/changepassword.html.twig', [
+                    'customer' => $customer,
+                    'changePasswordForm' => $form->createView()
         ]);
     }
 

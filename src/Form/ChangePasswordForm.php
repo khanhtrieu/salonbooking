@@ -30,11 +30,9 @@ class ChangePasswordForm extends AbstractType {
 
     public function buildForm(FormBuilderInterface $builder, array $options): void {
         $builder
-                ->add('email', TextType::class, [
+                ->add('email', TextareaType::class, [
                     'label'=> 'Email:',
-                    // 'is_edit' => false
-                    // 'attr'=> [ 'readonly' => true ]
-                    // 'attr' => ['disabled' => true]
+                     'attr'=> [ 'readonly' => true ]
                 ])
 
                 ->add('oldPassword', PasswordType::class, [

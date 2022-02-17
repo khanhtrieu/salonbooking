@@ -193,6 +193,9 @@ class CustomerController extends AbstractController {
                 $entityManager->flush();
                 $this->addFlash('success', 'Your password has been reset!');
             }
+            else{
+                $this->addFlash('error', 'Your attempt is failed');
+            }
             
             return $this->redirectToRoute('customer_edit_password');
         }

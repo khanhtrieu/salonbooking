@@ -17,6 +17,8 @@ use App\Entity\Customer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\TelType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\IsTrue;
@@ -36,18 +38,18 @@ class CustomerEditForm extends AbstractType {
                 ->add('state')
                 ->add('zipcode')
                 ->add('additionalInfo', TextareaType::class)
-                ->add('oldPassword', PasswordType::class, [
-                    // instead of being set onto the object directly,
-                    // this is read and encoded in the controller
-                    'mapped' => false,
-                    'attr' => ['autocomplete' => 'old-password'],
-                ])
-                ->add('newPassword', PasswordType::class, [
-                    // instead of being set onto the object directly,
-                    // this is read and encoded in the controller
-                    'mapped' => false,
-                    'attr' => ['autocomplete' => 'new-password'],
-                ])
+                // ->add('oldPassword', PasswordType::class, [
+                //     // instead of being set onto the object directly,
+                //     // this is read and encoded in the controller
+                //     'mapped' => false,
+                //     'attr' => ['autocomplete' => 'old-password'],
+                // ])
+                // ->add('newPassword', PasswordType::class, [
+                //     // instead of being set onto the object directly,
+                //     // this is read and encoded in the controller
+                //     'mapped' => false,
+                //     'attr' => ['autocomplete' => 'new-password'],
+                // ])
         ;
     }
 

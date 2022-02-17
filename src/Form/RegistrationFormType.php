@@ -6,6 +6,7 @@ use App\Entity\Customer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -22,14 +23,14 @@ class RegistrationFormType extends AbstractType {
         $builder
                 ->add('email', EmailType::class, ['constraints' => new Email(), 'required' => true])
                 ->add('firstName', null, ['required' => true])
-                ->add('lastName')
-                ->add('address')
-                ->add('address2')
-                ->add('phone', TelType::class)
-                ->add('city')
-                ->add('state')
-                ->add('zipcode')
-                ->add('additionalInfo', TextareaType::class)
+                ->add('lastName', null, ['required' => true])
+                ->add('address', null, ['required' => false])
+                ->add('address2', null, ['required' => false])
+                ->add('phone', TelType::class, ['required' => false])
+                ->add('city', null, ['required' => false])
+                ->add('state', null, ['required' => false])
+                ->add('zipcode', null, ['required' => false])
+                ->add('additionalInfo', TextareaType::class, ['required' => false])
                 ->add('agreeTerms', CheckboxType::class, [
                     'mapped' => false,
                     'constraints' => [
@@ -38,7 +39,13 @@ class RegistrationFormType extends AbstractType {
                                 ]),
                     ],
                 ])
-                ->add('plainPassword', PasswordType::class, [
+                ->add('plainPassword', RepeatedType::class, [
+                    'type' => PasswordType::class,
+                    'invalid_message' => 'The password fields must match.',
+                    'first_options' => ['label' => 'Password'],
+                    'second_options' => ['label' => 'Repeat Password'],
+                    'options' => ['attr' => ['class' => 'password-field']],
+                    'required' => true,
                     // instead of being set onto the object directly,
                     // this is read and encoded in the controller
                     'mapped' => false,

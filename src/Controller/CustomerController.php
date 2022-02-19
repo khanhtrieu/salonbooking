@@ -20,6 +20,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Form\FormError;
 
 class CustomerController extends AbstractController {
 
@@ -92,7 +93,7 @@ class CustomerController extends AbstractController {
 
             $entityManager->persist($user);
             $entityManager->flush();
-
+            $this->sendEmailVerifier($user);
             return $this->redirectToRoute('customer');
         }
 
@@ -104,19 +105,25 @@ class CustomerController extends AbstractController {
     /**
      * @Route("customer/verify/email", name="customer_verify_email")
      */
-    public function verifyUserEmail(Request $request): Response {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-
-        // validate email confirmation link, sets User::isVerified=true and persists
-        try {
-            $this->emailVerifier->handleEmailConfirmation($request, $this->getUser());
-        } catch (VerifyEmailExceptionInterface $exception) {
-            $this->addFlash('verify_email_error', $exception->getReason());
-            return $this->redirectToRoute('customer_register');
+    public function verifyUserEmail(Request $request, CustomerRepository $customerRepository): Response {
+        // $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $signature = $request->query->get('signature');
+        if (!empty($signature)) {
+            $customer = $customerRepository->findOneBy(['verifySignature' => $signature]);
+            var_dump($signature);exit;
+            if (!empty($customer)) {
+                try {
+                    $this->emailVerifier->handleEmailConfirmation($request, $customer);
+                    return $this->redirectToRoute('customer_login');
+                } catch (VerifyEmailExceptionInterface $exception) {
+                    $this->addFlash('verify_email_error', $exception->getReason());
+                    return $this->redirectToRoute('customer_register');
+                }
+            }
         }
-
+        // validate email confirmation link, sets User::isVerified=true and persists
         // @TODO Change the redirect on success and handle or remove the flash message in your templates
-        $this->addFlash('success', 'Your email address has been verified.');
+        $this->addFlash('verify_email_error', 'Invalid request');
 
         return $this->redirectToRoute('customer_register');
     }
@@ -160,7 +167,7 @@ class CustomerController extends AbstractController {
     /**
      * @Route("/customer/edit/password", name="customer_edit_password")
      */
-    public function changePassword(Request $request, CustomerRepository $customerRepository, EntityManagerInterface $entityManager, SessionInterface $session): Response {
+    public function changePassword(Request $request, UserPasswordHasherInterface $userPasswordHasher, CustomerRepository $customerRepository, EntityManagerInterface $entityManager, SessionInterface $session): Response {
         $customer = $this->getCustomer($customerRepository, $session);
         if (empty($customer)) {
             return $this->redirectToRoute('customer_login');
@@ -173,21 +180,19 @@ class CustomerController extends AbstractController {
             $email = $form->get('email')->getData();
             $password = $form->get('oldPassword')->getData();
             $customerLogin = $entityManager->getRepository(Customer::class)->findOneBy(['email' => $email, 'isVerified' => true]);
-            if ($userPasswordHasher->isPasswordValid($customerLogin, $password))
-            {
+            if ($userPasswordHasher->isPasswordValid($customerLogin, $password)) {
                 $customer->setPassword(
-                    $userPasswordHasher->hashPassword(
-                            $customer,
-                            $form->get('newPassword')->getData()
-                    )
-            );
+                        $userPasswordHasher->hashPassword(
+                                $customer,
+                                $form->get('newPassword')->getData()
+                        )
+                );
                 $entityManager->flush();
                 $this->addFlash('success', 'Your password has been reset!');
-            }
-            else{
+                return $this->redirectToRoute('customer');
+            } else {
                 $this->addFlash('error', 'Your attempt is failed');
             }
-            return $this->redirectToRoute('customer_edit_password');
         }
         return $this->render('customer/changepassword.html.twig', [
                     'customer' => $customer,
@@ -198,31 +203,25 @@ class CustomerController extends AbstractController {
     /**
      * @Route("/customer/forgotpassword", name="customer_forgotpassword")
      */
-    public function forgotPassword(Request $request, CustomerRepository $customerRepository,EntityManagerInterface $entityManager): Response {
+    public function forgotPassword(Request $request, CustomerRepository $customerRepository, EntityManagerInterface $entityManager): Response {
         //$customer = new Customer();
         $form = $this->createForm(ForgotPasswordForm::class);
-        $form->handleRequest($request);
-        var_dump($form->isSubmitted());
-        if ($form->isSubmitted()) { //isValid ??
-            $email = $form->get('resetemail')->getData();
-            // $password = $form->get('oldPassword')->getData();
-            $customer = $entityManager->getRepository(Customer::class)->findOneBy(['email' => $email]);
-        
-            var_dump($email);
-            if ($customer->getEmail() == $email){
-                var_dump($email);
+        if ($request->isMethod('POST')) {
+            $form->submit($request->request->get('resetemail'));
+            if ($form->isSubmitted() && $form->isValid()) { //isValid ??
+                $email = $form->get('resetemail')->getData();
+                $customer = $entityManager->getRepository(Customer::class)->findOneBy(['email' => $email]);
+                if (!empty($customer)) {
+                    return $this->redirectToRoute('customer');
+                }
+                $form->get('resetemail')->addError(new FormError("User cannot found"));
             }
-                       
-            return $this->redirectToRoute('customer_forgotpassword');
         }
 
-
         return $this->render('customer/forgotpassword.html.twig', [
-                    
                     'forgotPasswordForm' => $form->createView()
         ]);
     }
-
 
     private function getCustomer(CustomerRepository $customerRepository, SessionInterface $session) {
         $userid = $session->get('userid');
@@ -233,9 +232,9 @@ class CustomerController extends AbstractController {
         return $customer;
     }
 
-    private function sendEmailVerifier(User $user) {
+    private function sendEmailVerifier(Customer $user) {
         // generate a signed url and email it to the user
-        $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
+        $this->emailVerifier->sendEmailConfirmation('customer_verify_email', $user,
                 (new TemplatedEmail())
                         ->from(new Address('test@gmail.com', 'Webmaster'))
                         ->to($user->getEmail())

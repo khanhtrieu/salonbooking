@@ -1,1 +1,28 @@
 @import "../../node_modules/bootstrap/scss/bootstrap";
+
+@mixin flexCenter($direction) {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-direction:  $direction;
+}
+
+$primary-color: #272727;
+
+body 
+{
+    padding: 50px 1000px 50px 50px;
+    @include flexCenter(column);
+    background:
+    linear-gradient(
+        rgba($primary-color, 0.3),
+        rgba($primary-color, 0.3)
+    ), url('../images/background-image.jpg') no-repeat center top;
+   left:20%;
+   top:20%;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    color: black;
+}

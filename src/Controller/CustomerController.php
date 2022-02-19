@@ -107,20 +107,20 @@ class CustomerController extends AbstractController {
      */
     public function verifyUserEmail(Request $request, CustomerRepository $customerRepository): Response {
         // $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-        $signature = $request->query->get('signature');
-        if (!empty($signature)) {
-            $customer = $customerRepository->findOneBy(['verifySignature' => $signature]);
-            var_dump($signature);exit;
-            if (!empty($customer)) {
-                try {
-                    $this->emailVerifier->handleEmailConfirmation($request, $customer);
-                    return $this->redirectToRoute('customer_login');
-                } catch (VerifyEmailExceptionInterface $exception) {
-                    $this->addFlash('verify_email_error', $exception->getReason());
-                    return $this->redirectToRoute('customer_register');
-                }
+
+
+        $customer = $customerRepository->findOneBy(['verifySignature' => $request->getUri()]);
+
+        if (!empty($customer)) {
+            try {
+                $this->emailVerifier->handleEmailConfirmation($request, $customer);
+                return $this->redirectToRoute('customer_login');
+            } catch (VerifyEmailExceptionInterface $exception) {
+                $this->addFlash('verify_email_error', $exception->getReason());
+                return $this->redirectToRoute('customer_register');
             }
         }
+
         // validate email confirmation link, sets User::isVerified=true and persists
         // @TODO Change the redirect on success and handle or remove the flash message in your templates
         $this->addFlash('verify_email_error', 'Invalid request');

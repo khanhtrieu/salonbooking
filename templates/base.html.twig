@@ -17,15 +17,20 @@
 
     </head>
     <body>
-        <div class="row">
+        <div class="header-container">
             <div class="header">
                 {% include '_partials/header.html.twig' %}
             </div>
         </div>
-        <div class="row">
+        <div class="body-container container">
             {% block body %}{% endblock %}
         </div>
-        <div class="row">
+        <div>
+            {% block stylesheet %}
+            <link rel="stylesheet" type="text/css" href="_dev/frontend/css/theme.scss" /> 
+            {% endblock %}
+        </div>
+        <div class="footer-container">
             <div class="footer">
                 {% include '_partials/footer.html.twig' %}
             </div>

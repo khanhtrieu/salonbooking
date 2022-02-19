@@ -92,16 +92,6 @@ class CustomerController extends AbstractController {
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // generate a signed url and email it to the user
-//            $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
-//                    (new TemplatedEmail())
-//                            ->from(new Address('test@gmail.com', 'Webmaster'))
-//                            ->to($user->getEmail())
-//                            ->subject('Please Confirm your Email')
-//                            ->htmlTemplate('customer/confirmation_email.html.twig')
-//            );
-            // do anything else you need here, like send an email
-
             return $this->redirectToRoute('customer');
         }
 
@@ -133,7 +123,7 @@ class CustomerController extends AbstractController {
     /**
      * @Route("/customer/edit/profile", name="customer_edit_profile")
      */
-    public function edit(Request $request, CustomerRepository $customerRepository,EntityManagerInterface $entityManager, SessionInterface $session): Response {
+    public function edit(Request $request, CustomerRepository $customerRepository, EntityManagerInterface $entityManager, SessionInterface $session): Response {
         $customer = $this->getCustomer($customerRepository, $session);
         if (empty($customer)) {
             return $this->redirectToRoute('customer_login');
@@ -141,7 +131,7 @@ class CustomerController extends AbstractController {
 
         $form = $this->createForm(CustomerEditForm::class, $customer);
         $form->handleRequest($request);
-        
+
         if ($form->isSubmitted() && $form->isValid()) {
             // var_dump($customer);
             $customer->setFirstName($form->get('firstName')->getData());
@@ -169,7 +159,7 @@ class CustomerController extends AbstractController {
     /**
      * @Route("/customer/edit/password", name="customer_edit_password")
      */
-    public function changePassword(Request $request, CustomerRepository $customerRepository,EntityManagerInterface $entityManager, SessionInterface $session): Response {
+    public function changePassword(Request $request, CustomerRepository $customerRepository, EntityManagerInterface $entityManager, SessionInterface $session): Response {
         $customer = $this->getCustomer($customerRepository, $session);
         if (empty($customer)) {
             return $this->redirectToRoute('customer_login');
@@ -177,15 +167,13 @@ class CustomerController extends AbstractController {
 
         $form = $this->createForm(ChangePasswordForm::class, $customer);
         $form->handleRequest($request);
-        
+
         if ($form->isSubmitted() && $form->isValid()) {
             // var_dump($customer);
-            
             //$entityManager->persist($customer);
             $entityManager->flush();
             return $this->redirectToRoute('customer_edit_profile');
         }
-
 
 
         return $this->render('customer/changepassword.html.twig', [
@@ -201,6 +189,18 @@ class CustomerController extends AbstractController {
             return null;
         }
         return $customer;
+    }
+
+    private function sendEmailVerifier(User $user) {
+        // generate a signed url and email it to the user
+        $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
+                (new TemplatedEmail())
+                        ->from(new Address('test@gmail.com', 'Webmaster'))
+                        ->to($user->getEmail())
+                        ->subject('Please Confirm your Email')
+                        ->htmlTemplate('customer/confirmation_email.html.twig')
+        );
+        // do anything else you need here, like send an email
     }
 
 }

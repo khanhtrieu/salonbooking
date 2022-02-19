@@ -10,27 +10,29 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
 
-class EmailVerifier
-{
+class EmailVerifier {
+
     private $verifyEmailHelper;
     private $mailer;
     private $entityManager;
 
-    public function __construct(VerifyEmailHelperInterface $helper, MailerInterface $mailer, EntityManagerInterface $manager)
-    {
+    public function __construct(VerifyEmailHelperInterface $helper, MailerInterface $mailer, EntityManagerInterface $manager) {
         $this->verifyEmailHelper = $helper;
         $this->mailer = $mailer;
         $this->entityManager = $manager;
     }
 
-    public function sendEmailConfirmation(string $verifyEmailRouteName, UserInterface $user, TemplatedEmail $email): void
-    {
+    public function sendEmailConfirmation(string $verifyEmailRouteName, UserInterface $user, TemplatedEmail $email): void {
         $signatureComponents = $this->verifyEmailHelper->generateSignature(
-            $verifyEmailRouteName,
-            $user->getId(),
-            $user->getEmail()
+                $verifyEmailRouteName,
+                $user->getId(),
+                $user->getEmail()
         );
-
+       
+        $user->setVerifySignature($signatureComponents->getSignedUrl());
+        $user->setVerifyExpireDate(new \DateTime());
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
         $context = $email->getContext();
         $context['signedUrl'] = $signatureComponents->getSignedUrl();
         $context['expiresAtMessageKey'] = $signatureComponents->getExpirationMessageKey();
@@ -44,13 +46,12 @@ class EmailVerifier
     /**
      * @throws VerifyEmailExceptionInterface
      */
-    public function handleEmailConfirmation(Request $request, UserInterface $user): void
-    {
+    public function handleEmailConfirmation(Request $request, UserInterface $user): void {
         $this->verifyEmailHelper->validateEmailConfirmation($request->getUri(), $user->getId(), $user->getEmail());
-
         $user->setIsVerified(true);
-
+        $user->setVerifySignature('');
         $this->entityManager->persist($user);
         $this->entityManager->flush();
     }
+
 }

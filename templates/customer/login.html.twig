@@ -25,7 +25,7 @@
                 {{ form_errors(loginForm.plainPassword) }}
             </div>
         </div>
-        <a href="#" >Forgot your password ?</a>
+        <a href="{{ url('customer_forgotpassword') }}" >Forgot your password ?</a>
         <div class="form-group pt-2">
             <button type="submit" class="btn btn-primary">Login</button> <a href="{{ url('customer_register') }}" class="btn btn-outline-primary">Signup</a>
         </div>

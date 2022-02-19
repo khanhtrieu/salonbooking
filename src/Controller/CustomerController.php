@@ -7,6 +7,7 @@ use App\Repository\CustomerRepository;
 use App\Form\RegistrationFormType;
 use App\Form\CustomerEditForm;
 use App\Form\ChangePasswordForm;
+use App\Form\ForgotPasswordForm;
 use App\Form\CustomerLoginForm;
 use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
@@ -199,14 +200,40 @@ class CustomerController extends AbstractController {
             
             return $this->redirectToRoute('customer_edit_password');
         }
-
-
-
         return $this->render('customer/changepassword.html.twig', [
                     'customer' => $customer,
                     'changePasswordForm' => $form->createView()
         ]);
     }
+
+    /**
+     * @Route("/customer/forgotpassword", name="customer_forgotpassword")
+     */
+    public function forgotPassword(Request $request, CustomerRepository $customerRepository,EntityManagerInterface $entityManager): Response {
+        //$customer = new Customer();
+        $form = $this->createForm(ForgotPasswordForm::class);
+        $form->handleRequest($request);
+        var_dump($form->isSubmitted());
+        if ($form->isSubmitted()) { //isValid ??
+            $email = $form->get('resetemail')->getData();
+            // $password = $form->get('oldPassword')->getData();
+            $customer = $entityManager->getRepository(Customer::class)->findOneBy(['email' => $email]);
+        
+            var_dump($email);
+            if ($customer->getEmail() == $email){
+                var_dump($email);
+            }
+                       
+            return $this->redirectToRoute('customer_forgotpassword');
+        }
+
+
+        return $this->render('customer/forgotpassword.html.twig', [
+                    
+                    'forgotPasswordForm' => $form->createView()
+        ]);
+    }
+
 
     private function getCustomer(CustomerRepository $customerRepository, SessionInterface $session) {
         $userid = $session->get('userid');

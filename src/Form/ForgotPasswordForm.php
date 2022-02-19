@@ -32,7 +32,7 @@ class ForgotPasswordForm extends AbstractType {
 
     public function buildForm(FormBuilderInterface $builder, array $options): void {
         $builder
-                ->add('resetemail', null, [
+                ->add('resetemail', EmailType::class, [
                     'mapped' => false,
                     'constraints' => [new Email()],
                     'required' => true
@@ -44,7 +44,6 @@ class ForgotPasswordForm extends AbstractType {
         $resolver->setDefaults([
             'data_class' => Customer::class,
             'csrf_protection' => false,
-
         ]);
     }
 

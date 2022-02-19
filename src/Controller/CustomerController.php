@@ -9,6 +9,7 @@ use App\Form\CustomerEditForm;
 use App\Form\ChangePasswordForm;
 use App\Form\ForgotPasswordForm;
 use App\Form\CustomerLoginForm;
+use App\Form\ResetPasswordForm;
 use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -21,6 +22,9 @@ use Symfony\Component\Routing\Annotation\Route;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Form\FormError;
+use SymfonyCasts\Bundle\VerifyEmail\Generator\VerifyEmailTokenGenerator;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class CustomerController extends AbstractController {
 
@@ -79,21 +83,21 @@ class CustomerController extends AbstractController {
      * @Route("/customer/register", name="customer_register")
      */
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response {
-        $user = new Customer();
-        $form = $this->createForm(RegistrationFormType::class, $user);
+        $customer = new Customer();
+        $form = $this->createForm(RegistrationFormType::class, $customer);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             // encode the plain password
-            $user->setPassword(
+            $customer->setPassword(
                     $userPasswordHasher->hashPassword(
-                            $user,
+                            $customer,
                             $form->get('plainPassword')->getData()
                     )
             );
 
-            $entityManager->persist($user);
+            $entityManager->persist($customer);
             $entityManager->flush();
-            $this->sendEmailVerifier($user);
+            $this->sendEmailVerifier($customer);
             return $this->redirectToRoute('customer');
         }
 
@@ -151,7 +155,7 @@ class CustomerController extends AbstractController {
             $customer->setState($form->get('state')->getData());
             $customer->setZipcode($form->get('zipcode')->getData());
             $customer->setAdditionalInfo($form->get('additionalInfo')->getData());
-            //$entityManager->persist($customer);
+            $entityManager->persist($customer);
             $entityManager->flush();
             return $this->redirectToRoute('customer_edit_profile');
         }
@@ -201,17 +205,58 @@ class CustomerController extends AbstractController {
     }
 
     /**
+     * @Route("/customer/reset/password", name="customer_reset_password")
+     */
+    public function resetPassword(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $userPasswordHasher) {
+        $token = $request->query->get('token');
+        if (empty($token)) {
+            $this->addFlash('error', 'Can not found user');
+            return $this->redirectToRoute('customer_login');
+        }
+        $customer = $entityManager->getRepository(Customer::class)->findOneBy(['resetPasswordToken' => $token]);
+
+        if (empty($customer)) {
+            $this->addFlash('error', 'Can not found user');
+            return $this->redirectToRoute('customer');
+        }
+        $form = $this->createForm(ResetPasswordForm::class, $customer);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $customer->setResetPasswordToken('');
+            $customer->setPassword(
+                    $userPasswordHasher->hashPassword(
+                            $customer,
+                            $form->get('plainPassword')->getData()
+                    )
+            );
+            $entityManager->persist($customer);
+            $entityManager->flush();
+            return $this->redirectToRoute('customer_login');
+        }
+        return $this->render('customer/resetpassword.html.twig', [
+                    'customer' => $customer,
+                    'resetPasswordForm' => $form->createView()
+        ]);
+    }
+
+    /**
      * @Route("/customer/forgotpassword", name="customer_forgotpassword")
      */
-    public function forgotPassword(Request $request, CustomerRepository $customerRepository, EntityManagerInterface $entityManager): Response {
+    public function forgotPassword(Request $request, EntityManagerInterface $entityManager, MailerInterface $mailer): Response {
         //$customer = new Customer();
+
         $form = $this->createForm(ForgotPasswordForm::class);
         if ($request->isMethod('POST')) {
-            $form->submit($request->request->get('resetemail'));
+            $form->submit($request->request->get('forgot_password_form'));
             if ($form->isSubmitted() && $form->isValid()) { //isValid ??
                 $email = $form->get('resetemail')->getData();
                 $customer = $entityManager->getRepository(Customer::class)->findOneBy(['email' => $email]);
                 if (!empty($customer)) {
+                    $token = (new VerifyEmailTokenGenerator(time()))->createToken($customer->getId(), $customer->getEmail());
+                    $customer->setResetPasswordToken($token);
+                    $entityManager->persist($customer);
+                    $entityManager->flush();
+                    $this->sendEmailResetPassword($customer, $mailer);
                     return $this->redirectToRoute('customer');
                 }
                 $form->get('resetemail')->addError(new FormError("User cannot found"));
@@ -232,16 +277,30 @@ class CustomerController extends AbstractController {
         return $customer;
     }
 
-    private function sendEmailVerifier(Customer $user) {
+    private function sendEmailVerifier(Customer $customer) {
         // generate a signed url and email it to the user
-        $this->emailVerifier->sendEmailConfirmation('customer_verify_email', $user,
+        $this->emailVerifier->sendEmailConfirmation('customer_verify_email', $customer,
                 (new TemplatedEmail())
                         ->from(new Address('test@gmail.com', 'Webmaster'))
-                        ->to($user->getEmail())
+                        ->to($customer->getEmail())
                         ->subject('Please Confirm your Email')
                         ->htmlTemplate('customer/confirmation_email.html.twig')
         );
         // do anything else you need here, like send an email
+    }
+
+    private function sendEmailResetPassword(Customer $customer, MailerInterface $mailer) {
+        $url = $this->generateUrl('customer_reset_password', array('token' => $customer->getResetPasswordToken()), UrlGeneratorInterface::ABSOLUTE_URL);
+        $email = (new TemplatedEmail())
+                ->from(new Address('test@gmail.com', 'Webmaster'))
+                ->to($customer->getEmail())
+                ->subject('Reset password')
+                // path of the Twig template to render
+                ->htmlTemplate('customer/reset_password_email.html.twig')
+                ->context([
+            'link' => $url
+        ]);
+        $mailer->send($email);
     }
 
 }

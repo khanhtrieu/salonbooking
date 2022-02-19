@@ -97,6 +97,11 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface {
      */
     private $verifyExpireDate;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $resetPasswordToken;
+
     public function __construct() {
         $this->setVerifySignature('');
         $this->setVerifyExpireDate(new \DateTime());
@@ -296,6 +301,18 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface {
 
     public function setVerifyExpireDate(?\DateTimeInterface $verifyExpireDate): self {
         $this->verifyExpireDate = $verifyExpireDate;
+
+        return $this;
+    }
+
+    public function getResetPasswordToken(): ?string
+    {
+        return $this->resetPasswordToken;
+    }
+
+    public function setResetPasswordToken(?string $resetPasswordToken): self
+    {
+        $this->resetPasswordToken = $resetPasswordToken;
 
         return $this;
     }

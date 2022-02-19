@@ -12,7 +12,17 @@
     {# <button type="submit" class="btn btn-primary">Update</button> #}
     
     {{ form_start(editForm) }}
-    <a style="width: 90px"class="btn btn-danger" href="{{ url('customer') }}" class="btn btn-outline-primary">
+     
+    {{ form_row(editForm.firstName) }}
+    {{ form_row(editForm.lastName) }}
+    {{ form_row(editForm.address) }}
+    {{ form_row(editForm.address2) }}
+    {{ form_row(editForm.phone) }}
+    {{ form_row(editForm.city) }}
+    {{ form_row(editForm.state) }}
+    {{ form_row(editForm.zipcode) }}
+    {{ form_row(editForm.additionalInfo) }}
+    <a class="btn btn-danger" href="{{ url('customer') }}" >
     Go back
     </a>
     <button type="submit" class="btn btn-primary">Update</button>

@@ -181,9 +181,8 @@ class CustomerController extends AbstractController {
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $email = $form->get('email')->getData();
             $password = $form->get('oldPassword')->getData();
-            $customerLogin = $entityManager->getRepository(Customer::class)->findOneBy(['email' => $email, 'isVerified' => true]);
+            $customerLogin = $entityManager->getRepository(Customer::class)->find($customer->getId());
             if ($userPasswordHasher->isPasswordValid($customerLogin, $password)) {
                 $customer->setPassword(
                         $userPasswordHasher->hashPassword(
@@ -195,7 +194,7 @@ class CustomerController extends AbstractController {
                 $this->addFlash('success', 'Your password has been reset!');
                 return $this->redirectToRoute('customer');
             } else {
-                $this->addFlash('error', 'Your attempt is failed');
+                $this->addFlash('error', 'Old password incorrect');
             }
         }
         return $this->render('customer/changepassword.html.twig', [

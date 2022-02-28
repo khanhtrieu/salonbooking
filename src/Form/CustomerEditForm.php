@@ -30,26 +30,14 @@ class CustomerEditForm extends AbstractType {
     public function buildForm(FormBuilderInterface $builder, array $options): void {
         $builder
                 ->add('firstName', null, ['required' => true])
-                ->add('lastName')
-                ->add('address')
-                ->add('address2')
-                ->add('phone', TelType::class)
-                ->add('city')
-                ->add('state')
-                ->add('zipcode')
-                ->add('additionalInfo', TextareaType::class)
-                // ->add('oldPassword', PasswordType::class, [
-                //     // instead of being set onto the object directly,
-                //     // this is read and encoded in the controller
-                //     'mapped' => false,
-                //     'attr' => ['autocomplete' => 'old-password'],
-                // ])
-                // ->add('newPassword', PasswordType::class, [
-                //     // instead of being set onto the object directly,
-                //     // this is read and encoded in the controller
-                //     'mapped' => false,
-                //     'attr' => ['autocomplete' => 'new-password'],
-                // ])
+                ->add('lastName', null, ['required' => true])
+                ->add('address', null, ['required' => false])
+                ->add('address2', null, ['required' => false])
+                ->add('phone', TelType::class, ['required' => false])
+                ->add('city', null, ['required' => false])
+                ->add('state', null, ['required' => false])
+                ->add('zipcode', null, ['required' => false])
+                ->add('additionalInfo', TextareaType::class, ['required' => false])
         ;
     }
 

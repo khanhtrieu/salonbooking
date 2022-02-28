@@ -15,7 +15,7 @@ namespace App\Form;
  */
 use App\Entity\Customer;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -29,7 +29,6 @@ class ChangePasswordForm extends AbstractType {
 
     public function buildForm(FormBuilderInterface $builder, array $options): void {
         $builder
-                ->add('email')
                 ->add('oldPassword', PasswordType::class, [
                     // instead of being set onto the object directly,
                     // this is read and encoded in the controller

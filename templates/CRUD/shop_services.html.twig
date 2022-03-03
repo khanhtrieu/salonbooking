@@ -1,0 +1,14 @@
+{% extends '@SonataAdmin/standard_layout.html.twig' %}
+{% block sonata_admin_content %}
+    <form method="post">
+        {% for service in services %}
+            <div class="form-group">
+                <label><input type="checkbox" value="{{ service.id }}" name="services[]" {% if listDefault[service.id] is defined %}checked="checked"{% endif %} />{{ service.Name }}</label>
+                <input type="number" name="prices[{{ service.id}}]" value="{% if listDefault[service.id] is defined %}{{ listDefault[service.id]['price'] }}{% endif %}" />
+            </div> 
+        {% endfor %}
+        <div class="form-group">
+            <button type="submit" class='btn btn-primary'>Submit</button><a href='{{ listLink }}' class='btn btn-secondary'>Cancel</a>
+        </div> 
+    </form>
+{%  endblock %}

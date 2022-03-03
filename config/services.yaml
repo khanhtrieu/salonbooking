@@ -37,6 +37,17 @@ services:
             - {name: sonata.admin, model_class: App\Entity\Shop, manager_type: orm, label: Shop}
         calls:
             - [ setContainer, [ '@service_container' ] ]
+    admin.shop.services:
+        class: App\Admin\ShopAdmin
+        tags:
+            - {name: sonata.admin, model_class: App\Entity\Shop,  controller: App\Controller\AdminShopCRUDController,manager_type: orm, label: 'Shop Service'}
+    admin.service:
+        class: App\Admin\ServiceAdmin
+        tags:
+            - {name: sonata.admin, model_class: App\Entity\Services, manager_type: orm, label: Product}
+        calls:
+            - [ setContainer, [ '@service_container' ] ]
+    
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

@@ -39,6 +39,7 @@ class AdminShopCRUDController extends CRUDController {
         $listLink = $this->admin->generateUrl('list');
         $services = $entityManager->getRepository(Services::class)->getListServiceActivated();
         $listDefault = $entityManager->getRepository(ShopService::class)->getShopServices($id);
+
         $shopObj = $entityManager->getRepository(Shop::class)->find($id);
 
         if ($request->isMethod('post') && $shopObj->getId() > 0) {

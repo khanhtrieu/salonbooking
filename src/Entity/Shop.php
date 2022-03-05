@@ -55,7 +55,7 @@ class Shop
     private $Country;
 
     /**
-     * @ORM\Column(type="binary")
+     * @ORM\Column(type="boolean")
      */
     private $Active;
 

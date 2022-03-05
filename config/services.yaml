@@ -34,13 +34,13 @@ services:
     admin.shop:
         class: App\Admin\ShopAdmin
         tags:
-            - {name: sonata.admin, model_class: App\Entity\Shop, manager_type: orm, label: Shop}
+            - {name: sonata.admin, model_class: App\Entity\Shop,controller: App\Controller\AdminShopCRUDController, manager_type: orm, label: Shop}
         calls:
             - [ setContainer, [ '@service_container' ] ]
-    admin.shop.services:
-        class: App\Admin\ShopAdmin
-        tags:
-            - {name: sonata.admin, model_class: App\Entity\Shop,  controller: App\Controller\AdminShopCRUDController,manager_type: orm, label: 'Shop Service'}
+#    admin.shop.services:
+#        class: App\Admin\ShopAdmin
+#        tags:
+#            - {name: sonata.admin, model_class: App\Entity\Shop,  controller: App\Controller\AdminShopCRUDController,manager_type: orm, label: 'Shop Service'}
     admin.service:
         class: App\Admin\ServiceAdmin
         tags:

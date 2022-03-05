@@ -24,7 +24,8 @@ class ShopServiceRepository extends ServiceEntityRepository {
 
         $rs = $query->fetchAllAssociative();
         if (!empty($rs)) {
-            return array_column($rs, null, 'shop_id');
+
+            return array_column($rs, null, 'service_id');
         }
         return [];
     }

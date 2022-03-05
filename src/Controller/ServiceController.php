@@ -20,18 +20,16 @@ class ServiceController extends AbstractController
     {
         $title = 'All shops: ';
     
-        $shop = $doctrine->getRepository(Shop::class)->findAll();
+        $shops = $doctrine->getRepository(Shop::class)->findAll();
 
-        if (!$shop) {
+        if (!$shops) {
             throw $this->createNotFoundException(
                 'No shop available'
             );
         }
         
         return $this->render('service/index.html.twig', [
-            'controller_name' => 'ServiceController',
-            'title' => $title,
-            'shop' => $shop
+            'shops' => $shops
             //'Service: '.$service->getName()
         ]);
     }

@@ -10,7 +10,8 @@ let config = {
 	output:{
 		filename: '[name].js',
 		path: path.resolve(__dirname,'../../public/assets/js')
-	},
+	}
+    ,
 	module: {
     rules: [
       {
@@ -44,12 +45,19 @@ let config = {
     ],
   },
 	externals: {
-		$: '$',
-		jquery: 'jQuery',
+		//$: 'jQuery',
+              //   jquery: 'jQuery',
+		//jquery: 'jQuery',
 		Tether: 'tether',
 	},
 	plugins: [
-		new MiniCssExtractPlugin({filename: path.join('..', 'css', '[name].css')}),
+		
+                 new webpack.ProvidePlugin({
+            $: 'jquery',
+            jQuery: 'jquery',
+            'window.jQuery': 'jquery'
+        }),
+        new MiniCssExtractPlugin({filename: path.join('..', 'css', '[name].css')}),
 	]
 };
 

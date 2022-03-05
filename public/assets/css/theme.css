@@ -7950,3 +7950,15 @@ textarea.form-control-lg {
   .d-print-none {
     display: none !important; } }
 
+body {
+  padding: 50px 1000px 50px 50px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+  background: linear-gradient(rgba(39, 39, 40, 0.3), rgba(39, 39, 40, 0.3)), url(../js/aacca2f83f954c9ea587.jpg) no-repeat center top;
+  left: 20%;
+  top: 20%;
+  background-size: cover;
+  color: black; }
+

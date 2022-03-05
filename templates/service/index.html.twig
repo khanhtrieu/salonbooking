@@ -1,28 +1,21 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello ServiceController!{% endblock %}
+{% block title %}Booking{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
-
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ 'C:/Users/Doni/Desktop/AMSE Fullerton/AMSE-Spring/546 - Modern Management Tech/ProjectPHP/src/Controller/ServiceController.php'|file_link(0) }}">src/Controller/ServiceController.php</a></code></li>
-        <li>Your template at <code><a href="{{ 'C:/Users/Doni/Desktop/AMSE Fullerton/AMSE-Spring/546 - Modern Management Tech/ProjectPHP/templates/service/index.html.twig'|file_link(0) }}">templates/service/index.html.twig</a></code></li>
-    </ul>
-        <h1>{{ title }}</h1>
-    {% for i in shop %}
-        <b><a href="/service/{{i.getId()}}">{{ i.getName() }}</a></b><br>
-        Description: 
-        {{ i.getDescription() }}<br>
-        {# Price:
-        <b>${{ i.getPrice() }}</b><br><br> #}
-    {% endfor %}
-</div>
+    <div class="row" id="booking">
+        <div class="col-md-4">
+            {% for shop in shops %}
+                <div class="card booking-shop" data-url="{{ url('load_service',{id:shop.id}) }}">
+                    {#<img class="card-img-top" src="..." alt="Card image cap">#}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ shop.Name }}</h5>
+                        <p class="card-text">{{ shop.Description }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="col-md-4" id="shop-products"></div>
+        <div class="col-md-4"></div>
+    </div>
 {% endblock %}

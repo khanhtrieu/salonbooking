@@ -32,6 +32,14 @@ class ShopServiceRepository extends ServiceEntityRepository {
          $this->getEntityManager()->getConnection()->executeStatement("DELETE FROM  shop_service WHERE id IN ('". implode("','", $ids)."')");
     }
 
+    public function LoadServices($id) {
+        $query = $this->getEntityManager()->getConnection()->executeQuery('SELECT a.name, a.thumbnail, a.description
+        FROM services a INNER JOIN shop_service b ON a.id = b.service_id
+        WHERE a.active = 1 AND b.shop_id = ?',[$id]);
+
+        $rs = $query->fetchAllAssociative();
+        return $rs;
+    }
     // /**
     //  * @return ShopService[] Returns an array of ShopService objects
     //  */

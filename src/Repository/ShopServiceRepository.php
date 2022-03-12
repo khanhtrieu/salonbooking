@@ -20,7 +20,7 @@ class ShopServiceRepository extends ServiceEntityRepository {
     }
 
     public function getShopServices($id) {
-        $query = $this->getEntityManager()->getConnection()->executeQuery('SELECT id,price,shop_id,service_id  FROM shop_service WHERE service_id=?',[$id]);
+        $query = $this->getEntityManager()->getConnection()->executeQuery('SELECT id,price,shop_id,service_id  FROM shop_service WHERE shop_id=?',[$id]);
 
         $rs = $query->fetchAllAssociative();
         if (!empty($rs)) {

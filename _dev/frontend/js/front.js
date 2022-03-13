@@ -13,6 +13,7 @@ $(document).ready(function () {
                     html += '<div class="card">';
                     html +='<div class="card-body">';
                     html +='<h5 class="card-title">'+row.name+'</h5>';
+                    
                     html +='</div>';
                     html+='</div>';
                     $('#shop-products').append(html);

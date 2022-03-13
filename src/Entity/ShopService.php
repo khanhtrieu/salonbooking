@@ -32,6 +32,11 @@ class ShopService
      */
     private $Price;
 
+    /**
+     * @ORM\Column(type="time")
+     */
+    private $service_time;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -69,6 +74,18 @@ class ShopService
     public function setPrice(float $Price): self
     {
         $this->Price = $Price;
+
+        return $this;
+    }
+
+    public function getServiceTime(): ?\DateTimeInterface
+    {
+        return $this->service_time;
+    }
+
+    public function setServiceTime(\DateTimeInterface $service_time): self
+    {
+        $this->service_time = $service_time;
 
         return $this;
     }

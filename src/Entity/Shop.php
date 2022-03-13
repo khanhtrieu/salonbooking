@@ -69,6 +69,16 @@ class Shop
      */
     private $Service;
 
+    /**
+     * @ORM\Column(type="time", nullable=true)
+     */
+    private $start_time;
+
+    /**
+     * @ORM\Column(type="time", nullable=true)
+     */
+    private $end_time;
+
     public function __construct()
     {
         $this->Service = new ArrayCollection();
@@ -213,6 +223,30 @@ class Shop
                 $service->setShop(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getStartTime(): ?\DateTimeInterface
+    {
+        return $this->start_time;
+    }
+
+    public function setStartTime(?\DateTimeInterface $start_time): self
+    {
+        $this->start_time = $start_time;
+
+        return $this;
+    }
+
+    public function getEndTime(): ?\DateTimeInterface
+    {
+        return $this->end_time;
+    }
+
+    public function setEndTime(?\DateTimeInterface $end_time): self
+    {
+        $this->end_time = $end_time;
 
         return $this;
     }

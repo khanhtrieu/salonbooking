@@ -34,9 +34,16 @@ class ShopServiceRepository extends ServiceEntityRepository {
     }
 
     public function LoadServices($id) {
-        $query = $this->getEntityManager()->getConnection()->executeQuery('SELECT a.name, a.thumbnail, a.description
+        $query = $this->getEntityManager()->getConnection()->executeQuery('SELECT a.name, a.thumbnail, a.description, b.price, b.service_time
         FROM services a INNER JOIN shop_service b ON a.id = b.service_id
         WHERE a.active = 1 AND b.shop_id = ?',[$id]);
+
+        $rs = $query->fetchAllAssociative();
+        return $rs;
+    }
+
+    public function LoadAvaiTime($id1,$id2) {
+        $query = $this->getEntityManager()->getConnection()->executeQuery();
 
         $rs = $query->fetchAllAssociative();
         return $rs;

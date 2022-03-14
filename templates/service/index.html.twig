@@ -10,12 +10,14 @@
                     {#<img class="card-img-top" src="..." alt="Card image cap">#}
                     <div class="card-body">
                         <h5 class="card-title">{{ shop.Name }}</h5>
-                        <p class="card-text">{{ shop.Description }}</p>
+                        <p class="card-text">{{ shop.address1 }}{{ shop.address2 }}, {{ shop.city }}, {{ shop.state }}, {{ shop.zipcode }}, {{ shop.country }}
+                        </p>
                     </div>
                 </div>
             {% endfor %}
         </div>
         <div class="col-md-4" id="shop-products"></div>
+        <div class="col-md-4" id="avai-times"></div>
         <div class="col-md-4"></div>
     </div>
 {% endblock %}

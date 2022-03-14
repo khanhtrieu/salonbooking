@@ -38,7 +38,15 @@ class ServiceController extends AbstractController {
      */
     public function LoadService(ManagerRegistry $doctrine, int $id): JsonResponse {
         $shop = $doctrine->getRepository(ShopService::class)->LoadServices($id);
-        return $response = new JsonResponse($shop);
+        return $response = new JsonResponse(["test" => $shop, "url" => ""]);
+    }
+
+    /**
+     * @Route("/loadavaitime/{id1}/{id2}", name="load_availabletime")
+     */
+    public function LoadAvailableTime(ManagerRegistry $doctrine, int $id_shop, int $id2_service): JsonResponse {
+        $shop = $doctrine->getRepository(ShopService::class)->LoadAvaiTime($id);
+        return $response = new JsonResponse(["test" => $shop, "url" => ""]);
     }
 
 }

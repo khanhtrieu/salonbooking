@@ -23,6 +23,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use App\Entity\Customer;
 
 class CustomerAdmin extends AbstractAdmin {
@@ -34,7 +35,7 @@ class CustomerAdmin extends AbstractAdmin {
         if ($this->isCurrentRoute('create')) {
             $requirePassword = true;
         }
-        $form->add('email', TextType::class);
+        $form->add('email', EmailType::class);
         $form->add('plainPassword', PasswordType::class, ['mapped' => false, 'required' => $requirePassword]);
         $form->add('firstName', TextType::class, ['required' => true]);
         $form->add('lastName', TextType::class, ['required' => true]);
@@ -42,8 +43,14 @@ class CustomerAdmin extends AbstractAdmin {
         $form->add('address2', TextType::class, ['required' => false]);
         $form->add('phone', TextType::class, ['required' => false]);
         $form->add('city', TextType::class, ['required' => false]);
-        $form->add('state', TextType::class, ['required' => false]);
-        $form->add('zipcode', TextType::class, ['required' => false]);
+        $form->add('state', TextType::class, ['required' => false, 'attr' => ['maxlength' => '2']]);
+        $form->add('zipcode', TextType::class, ['required' => false, 'attr' => ['maxlength' => '10']]);
+        $form->add('isVerified', ChoiceType::class, ['required' => true,
+            'choices' => [
+                'Yes' => true,
+                'No' => false,
+            ]
+        ]);
     }
 
     protected function configureDatagridFilters(DatagridMapper $datagrid): void {

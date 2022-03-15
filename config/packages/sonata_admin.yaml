@@ -20,6 +20,10 @@ sonata_admin:
             - EXPORT
             - OPERATOR
             - MASTER
+    assets:
+        extra_javascripts: ["assets/admin/js/theme.js"]
+        extra_stylesheets: ["assets/admin/css/theme.css"]
+            
 
 
 sonata_block:

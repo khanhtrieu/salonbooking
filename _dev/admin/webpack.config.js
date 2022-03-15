@@ -6,7 +6,7 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 let config = {
 	mode: 'development',
 	entry: {
-		theme: ['./admin/js/front.js','./admin/css/theme.scss']
+		theme: ['./admin/js/backend.js','./admin/css/theme.scss']
 	},
 	output:{
 		filename: '[name].js',

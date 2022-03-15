@@ -9,13 +9,13 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./admin/js/front.js":
-/*!***************************!*\
-  !*** ./admin/js/front.js ***!
-  \***************************/
+/***/ "./admin/js/backend.js":
+/*!*****************************!*\
+  !*** ./admin/js/backend.js ***!
+  \*****************************/
 /***/ (() => {
 
-eval("\n\n//# sourceURL=webpack://salon-booking/./admin/js/front.js?");
+eval("$(document).ready(function () {\n  $(document).on('change', '.shop-service-selected', function () {\n    if ($(this).is(':checked')) {\n      $(this).closest('.service-group').find('.shop-service-selected-price').removeClass('d-none');\n    } else {\n      $(this).closest('.service-group').find('.shop-service-selected-price').addClass('d-none');\n    }\n  });\n});\n\n//# sourceURL=webpack://salon-booking/./admin/js/backend.js?");
 
 /***/ }),
 
@@ -52,7 +52,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n// extracted by mini-css-extr
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module can't be inlined because the eval devtool is used.
-/******/ 	__webpack_modules__["./admin/js/front.js"](0, {}, __webpack_require__);
+/******/ 	__webpack_modules__["./admin/js/backend.js"](0, {}, __webpack_require__);
 /******/ 	var __webpack_exports__ = {};
 /******/ 	__webpack_modules__["./admin/css/theme.scss"](0, __webpack_exports__, __webpack_require__);
 /******/ 	

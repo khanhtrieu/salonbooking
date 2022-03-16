@@ -1,4 +1,5 @@
 import 'bootstrap';
+import 'jquery-ui';
 
 $(document).ready(function () {
     if ($('#booking').length > 0) {
@@ -7,13 +8,13 @@ $(document).ready(function () {
             let url = $(this).data('url');
             $.get(url, function (data) {
                 $('#shop-products').html('');
-                $(data).each(function(index,row){
+                $(data.shop).each(function(index,row){
 
                     let html = '';
-                    html += '<div class="card shop-service">';
+                    html += '<div class="card shop-service" data-url="'+data.url+'" data-shopid="'+row.shop_id+'" data-serviceid="'+row.service_id+'">';
                     html +='<div class="card-body">';
                     html +='<h5 class="card-title">'+row.name+'</h5>';
-                    html +='<span>'+row.price+'</span>';
+                    html +='<span>Price: $'+row.price+'</span>';
                     html +='</div>';
                     html+='</div>';
                     $('#shop-products').append(html);
@@ -21,15 +22,17 @@ $(document).ready(function () {
             });
         });
 
-        $(document).on('click', '.card-body', function (e) {
+        $(document).on('click', '.shop-service', function (e) {
             e.preventDefault();
+            //let shop_id = $(this).data('shopid');
+            let service_id = $(this).data('serviceid');
             let url = $(this).data('url');
-            $.get(url, function (data) {
+            $.get(url,{'id_service': service_id} , function (data) {
                 $('#avai-times').html('');
-                $(data.test).each(function(index,row){
-
+                console.log(data);
+                $(data).each(function(index,row){
                     let html = '';
-                    html += '<div class="card-title" data-url="'+data.url+'">';
+                    html += '<div class="card-title"';
                     html +='<div class="card-text">';
                     html +='<span>'+row.name+'<span>';
                     html +='</div>';

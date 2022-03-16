@@ -4,7 +4,7 @@
 
 {% block body %}
     <div class="row" id="booking">
-        <div class="col-md-4">
+        <div class="col-md-4 col-sm-12">
             {% for shop in shops %}
                 <div class="card booking-shop" data-url="{{ url('load_service',{id:shop.id}) }}">
                     {#<img class="card-img-top" src="..." alt="Card image cap">#}
@@ -16,8 +16,8 @@
                 </div>
             {% endfor %}
         </div>
-        <div class="col-md-4" id="shop-products"></div>
-        <div class="col-md-4" id="avai-times"></div>
-        <div class="col-md-4"></div>
+        <div class="col-md-4 col-sm-12" id="shop-products"></div>
+        <div class="col-md-4 col-sm-12" id="avai-times"></div>
+        <div class="col-md-4 col-sm-12"></div>
     </div>
 {% endblock %}

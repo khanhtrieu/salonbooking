@@ -1,8 +1,7 @@
 import 'bootstrap';
+import 'jquery';
 import 'jquery-ui';
-
-
-
+require('jquery-ui/ui/widgets/datepicker');
 $(document).ready(function () {
     
     if ($('#booking').length > 0) {

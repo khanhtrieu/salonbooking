@@ -1,7 +1,11 @@
 import 'bootstrap';
 import 'jquery-ui';
+import 'jquery';
+
+
 
 $(document).ready(function () {
+    
     if ($('#booking').length > 0) {
         $(document).on('click', '.booking-shop', function (e) {
             e.preventDefault();
@@ -28,19 +32,47 @@ $(document).ready(function () {
             let service_id = $(this).data('serviceid');
             let url = $(this).data('url');
             $.get(url,{'id_service': service_id} , function (data) {
-                $('#avai-times').html('');
+                $('#work-calendar').html('');
+                data = [1, 2, 3];
                 console.log(data);
-                $(data).each(function(index,row){
-                    let html = '';
+                let html = '';
                     html += '<div class="card-title"';
                     html +='<div class="card-text">';
-                    html +='<span>'+row.name+'<span>';
+                    //html +='<span>'+row.name+'<span>';
+                    html +='<p>Schedule an appointment: <input type="text" id="datepicker"></p>';
                     html +='</div>';
                     html+='</div>';
-                    $('#avai-times').append(html);
-                });
+                    $('#work-calendar').append(html);
+                // $(data).each(function(index,row){
+                //     let html = '';
+                //     html += '<div class="card-title"';
+                //     html +='<div class="card-text">';
+                //     //html +='<span>'+row.name+'<span>';
+                //     html +='<p>Date: <input type="text" id="datepicker"></p>';
+                //     html +='</div>';
+                //     html+='</div>';
+                //     $('#avai-times').append(html);
+                // });
             });
         });
+        
+            //var special_date = ["03/22/2022", "03/24/2022"];
+            //var date_test = "03/22/2022";
+          $( "#datepicker" ).datepicker({
+              minDate: 0,
+              maxDate: "1M",
+      
+            //   beforeShowDay: function(date){
+            //       let datestring = (date.getMonth()+1) +'/'+ date.getDate() + '/' + date.getFullYear();
+            //       console.log(datestring);
+            //       if (date in special_date){
+            //         return [false];
+            //       }
+            //       return [true];
+            //   }
+          });
+          
+      ;
 
 
     }

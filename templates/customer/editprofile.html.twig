@@ -3,12 +3,17 @@
 {% block title %}Edit{% endblock %}
 
 {% block body %}
+    <div class="editprofile-page">
+ <div class="editprofile-block">
     <h1>Edit profile</h1>
     {# {% for message in app.flashes('error') %}
         <div class="alert alert-danger">
             {{ message }}
         </div>
     {% endfor %} #}
+
+   
+
     {# <button type="submit" class="btn btn-primary">Update</button> #}
     
     {{ form_start(editForm) }}
@@ -26,7 +31,9 @@
     Go back
     </a>
     <button type="submit" class="btn btn-primary">Update</button>
-    
+    </div>
+    </div>
+
     {{ form_end(editForm) }}
     
 {% endblock %}

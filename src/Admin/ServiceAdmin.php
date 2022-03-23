@@ -21,7 +21,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use App\Entity\Shop;
+use App\Entity\Services;
+use App\Entity\ShopService;
 
 class ServiceAdmin extends AbstractAdmin {
 
@@ -53,6 +54,16 @@ class ServiceAdmin extends AbstractAdmin {
 
     public function setContainer(\Symfony\Component\DependencyInjection\ContainerInterface $container) {
         $this->container = $container;
+    }
+
+    protected function preRemove(object $object): void {
+       $shopServices =  $this->getModelManager(ShopService::class)->findBy(ShopService::class,['Service'=>$object->getId()]);
+       if(count($shopServices) > 0){
+           foreach($shopServices as $shopservice){
+               $object->removeService($shopservice);
+           }
+       }
+      
     }
 
 }

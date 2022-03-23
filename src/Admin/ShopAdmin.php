@@ -21,8 +21,10 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Sonata\AdminBundle\Route\RouteCollectionInterface;
 use App\Entity\Shop;
+use App\Entity\ShopService;
 
 class ShopAdmin extends AbstractAdmin {
 
@@ -35,12 +37,16 @@ class ShopAdmin extends AbstractAdmin {
     protected function configureFormFields(FormMapper $form): void {
         $form->add('Name', TextType::class, ['required' => true]);
         $form->add('Description', TextareaType::class, ['required' => false]);
-        $form->add('Address1', TextType::class, ['required' => false]);
+        $form->add('Phone', TextType::class, ['required' => true, 'attr' => ['maxlength' => '15']]);
+        $form->add('Address1', TextType::class, ['required' => true]);
         $form->add('Address2', TextType::class, ['required' => false]);
-        $form->add('City', TextType::class, ['required' => false]);
-        $form->add('State', TextType::class, ['required' => false]);
-        $form->add('ZipCode', TextType::class, ['required' => false]);
-        $form->add('Country', CountryType::class, ['required' => false]);
+        $form->add('City', TextType::class, ['required' => true]);
+        $form->add('State', TextType::class, ['required' => true]);
+        $form->add('ZipCode', TextType::class, ['required' => true]);
+        $form->add('Country', CountryType::class, ['required' => true]);
+        $form->add('start_time', TimeType::class, ['required' => true]);
+        $form->add('end_time', TimeType::class, ['required' => true]);
+
         $form->add('Active', ChoiceType::class, ['required' => true,
             'choices' => [
                 'Yes' => true,
@@ -87,6 +93,15 @@ class ShopAdmin extends AbstractAdmin {
 
     public function getPoolContainer() {
         return $this->container;
+    }
+
+    protected function preRemove(object $object): void {
+        $shopServices = $this->getModelManager(ShopService::class)->findBy(ShopService::class, ['Shop' => $object->getId()]);
+        if (count($shopServices) > 0) {
+            foreach ($shopServices as $shopservice) {
+                $object->removeService($shopservice);
+            }
+        }
     }
 
 }

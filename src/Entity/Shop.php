@@ -79,6 +79,11 @@ class Shop
      */
     private $end_time;
 
+    /**
+     * @ORM\Column(type="string", length=15, nullable=true)
+     */
+    private $Phone;
+
     public function __construct()
     {
         $this->Service = new ArrayCollection();
@@ -247,6 +252,18 @@ class Shop
     public function setEndTime(?\DateTimeInterface $end_time): self
     {
         $this->end_time = $end_time;
+
+        return $this;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->Phone;
+    }
+
+    public function setPhone(?string $Phone): self
+    {
+        $this->Phone = $Phone;
 
         return $this;
     }

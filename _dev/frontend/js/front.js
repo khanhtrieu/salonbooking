@@ -1,6 +1,5 @@
 import 'bootstrap';
 import 'jquery-ui';
-import 'jquery';
 
 
 

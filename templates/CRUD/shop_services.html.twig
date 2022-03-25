@@ -11,6 +11,7 @@
                                 {{ service.Name }}</label>
                         </div>
                         <input type="number" name="prices[{{ service.id}}]" value="{% if listDefault[service.id] is defined %}{{ listDefault[service.id]['price'] }}{% endif %}" class="form-control shop-service-selected-price {% if listDefault[service.id] is not defined %}d-none{% endif %}"  />
+                        <input type="number" name="service_time[{{ service.id}}]" value="{% if listDefault[service.id] is defined %}{{ listDefault[service.id]['service_time'] }}{% endif %}" class="form-control shop-service-selected-price {% if listDefault[service.id] is not defined %}d-none{% endif %}"  />
                     </div>
                 </div>
             {% endfor %}

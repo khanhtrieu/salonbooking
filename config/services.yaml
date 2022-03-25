@@ -37,6 +37,12 @@ services:
             - {name: sonata.admin, model_class: App\Entity\Shop,controller: App\Controller\AdminShopCRUDController, manager_type: orm, label: Shop}
         calls:
             - [ setContainer, [ '@service_container' ] ]
+    admin.shopschedule:
+        class: App\Admin\ShopScheduleAdmin
+        tags:
+            - {name: sonata.admin, model_class: App\Entity\SpecialDate, manager_type: orm, show_in_dashboard: false}
+#        calls:
+#            - [ setContainer, [ '@service_container' ] ]
 #    admin.shop.services:
 #        class: App\Admin\ShopAdmin
 #        tags:

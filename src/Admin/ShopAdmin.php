@@ -17,6 +17,8 @@ use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\AdminBundle\Admin\AdminInterface;
+use Knp\Menu\ItemInterface as MenuItemInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
@@ -32,6 +34,7 @@ class ShopAdmin extends AbstractAdmin {
 
     protected function configureRoutes(RouteCollectionInterface $collection): void {
         $collection->add('services', $this->getRouterIdParameter() . '/services'); // Action gets added automatically
+        $collection->add('schedule', $this->getRouterIdParameter() . '/schedule'); // Action gets added automatically
     }
 
     protected function configureFormFields(FormMapper $form): void {
@@ -82,6 +85,9 @@ class ShopAdmin extends AbstractAdmin {
                 'delete' => [],
                 'services' => [
                     'template' => 'CRUD/list__action_services.html.twig'
+                ],
+                'schedule' => [
+                    'template' => 'CRUD/shop/list__action_schedule.html.twig'
                 ]
             ]
         ]);

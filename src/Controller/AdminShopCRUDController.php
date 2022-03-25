@@ -55,7 +55,7 @@ class AdminShopCRUDController extends CRUDController {
                         $tmpPrice = floatval($prices[$selected]);
                     }
                     $servicesObj = $entityManager->getRepository(Services::class)->find($selected);
-                    if($servicesObj == null || $servicesObj->getId() < 1){
+                    if ($servicesObj == null || $servicesObj->getId() < 1) {
                         continue;
                     }
                     if (isset($defaultService[$selected])) {
@@ -65,6 +65,7 @@ class AdminShopCRUDController extends CRUDController {
                         $shopServiceObject = new ShopService();
                         $shopServiceObject->setShop($shopObj);
                         $shopServiceObject->setService($servicesObj);
+                        $shopServiceObject->setServiceTime(new \DateTime());
                     }
                     $shopServiceObject->setPrice($tmpPrice);
                     $entityManager->persist($shopServiceObject);

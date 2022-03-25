@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ShopServiceRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -36,6 +38,16 @@ class ShopService
      * @ORM\Column(type="time")
      */
     private $service_time;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Booking::class, mappedBy="ShopService")
+     */
+    private $bookings;
+
+    public function __construct()
+    {
+        $this->bookings = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -86,6 +98,36 @@ class ShopService
     public function setServiceTime(\DateTimeInterface $service_time): self
     {
         $this->service_time = $service_time;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Booking[]
+     */
+    public function getBookings(): Collection
+    {
+        return $this->bookings;
+    }
+
+    public function addBooking(Booking $booking): self
+    {
+        if (!$this->bookings->contains($booking)) {
+            $this->bookings[] = $booking;
+            $booking->setShopService($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBooking(Booking $booking): self
+    {
+        if ($this->bookings->removeElement($booking)) {
+            // set the owning side to null (unless already changed)
+            if ($booking->getShopService() === $this) {
+                $booking->setShopService(null);
+            }
+        }
 
         return $this;
     }

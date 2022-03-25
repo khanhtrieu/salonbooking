@@ -33,19 +33,14 @@ class Booking
     private $end_time;
 
     /**
-     * @ORM\Column(type="integer")
-     */
-    private $shop_id;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $service_id;
-
-    /**
      * @ORM\Column(type="date")
      */
     private $date;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=ShopService::class, inversedBy="bookings")
+     */
+    private $ShopService;
 
     public function getId(): ?int
     {
@@ -88,30 +83,6 @@ class Booking
         return $this;
     }
 
-    public function getShopId(): ?int
-    {
-        return $this->shop_id;
-    }
-
-    public function setShopId(int $shop_id): self
-    {
-        $this->shop_id = $shop_id;
-
-        return $this;
-    }
-
-    public function getServiceId(): ?int
-    {
-        return $this->service_id;
-    }
-
-    public function setServiceId(int $service_id): self
-    {
-        $this->service_id = $service_id;
-
-        return $this;
-    }
-
     public function getDate(): ?\DateTimeInterface
     {
         return $this->date;
@@ -120,6 +91,18 @@ class Booking
     public function setDate(\DateTimeInterface $date): self
     {
         $this->date = $date;
+
+        return $this;
+    }
+
+    public function getShopService(): ?ShopService
+    {
+        return $this->ShopService;
+    }
+
+    public function setShopService(?ShopService $ShopService): self
+    {
+        $this->ShopService = $ShopService;
 
         return $this;
     }

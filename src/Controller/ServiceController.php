@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Services;
 use App\Entity\Shop;
 use App\Entity\ShopService;
+use App\Entity\SpecialDate;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Persistence\ManagerRegistry;
@@ -39,11 +40,19 @@ class ServiceController extends AbstractController {
      */
     public function LoadService(ManagerRegistry $doctrine, int $id): JsonResponse {
         $shop = $doctrine->getRepository(ShopService::class)->LoadServices($id);
+        $dateNotAvailable = $doctrine->getRepository(SpecialDate::class)->getShopDateUnAvailable($id);
+        $skipDates = [];
+        if (count($dateNotAvailable) > 0) {
+            foreach ($dateNotAvailable as $date) {
+                $skipDates[] = $date->format('Y-m-d');
+            }
+        }
         $url = $this->generateUrl('load_availabletime', array(
-            'id_shop' => $id
-            )
+            'id_shop' => $id,
+            'skipdate' => $skipDates
+                )
         );
-        return $response = new JsonResponse(['shop'=> $shop,'url' => $url]);
+        return $response = new JsonResponse(['shop' => $shop, 'url' => $url]);
     }
 
     /**

@@ -84,9 +84,15 @@ class Shop
      */
     private $Phone;
 
+    /**
+     * @ORM\OneToMany(targetEntity=SpecialDate::class, mappedBy="shop_id")
+     */
+    private $specialDates;
+
     public function __construct()
     {
         $this->Service = new ArrayCollection();
+        $this->specialDates = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -264,6 +270,36 @@ class Shop
     public function setPhone(?string $Phone): self
     {
         $this->Phone = $Phone;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|SpecialDate[]
+     */
+    public function getSpecialDates(): Collection
+    {
+        return $this->specialDates;
+    }
+
+    public function addSpecialDate(SpecialDate $specialDate): self
+    {
+        if (!$this->specialDates->contains($specialDate)) {
+            $this->specialDates[] = $specialDate;
+            $specialDate->setShopId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSpecialDate(SpecialDate $specialDate): self
+    {
+        if ($this->specialDates->removeElement($specialDate)) {
+            // set the owning side to null (unless already changed)
+            if ($specialDate->getShopId() === $this) {
+                $specialDate->setShopId(null);
+            }
+        }
 
         return $this;
     }

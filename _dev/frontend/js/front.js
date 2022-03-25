@@ -42,7 +42,7 @@ $(document).ready(function () {
                     html +='</div>';
                     html+='</div>';
                     $('#work-calendar').append(html);
-					$('#work-calendar #datepicker').datepicker();
+                    $('#work-calendar #datepicker').datepicker();
                 // $(data).each(function(index,row){
                 //     let html = '';
                 //     html += '<div class="card-title"';

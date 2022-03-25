@@ -44,7 +44,7 @@ class ServiceController extends AbstractController {
         $skipDates = [];
         if (count($dateNotAvailable) > 0) {
             foreach ($dateNotAvailable as $date) {
-                $skipDates[] = $date->format('Y-m-d');
+                $skipDates[] = $date['date']->format('Y-m-d');
             }
         }
         $url = $this->generateUrl('load_availabletime', array(
@@ -61,6 +61,7 @@ class ServiceController extends AbstractController {
     public function LoadAvailableTime(ManagerRegistry $doctrine, Request $request): JsonResponse {
         $id_shop = $request->query->get('id_shop');
         $id_service = $request->query->get('id_service');
+        $booking_date = $request->query->get('booking_date');
         //$shop = $doctrine->getRepository(ShopService::class)->LoadAvaiTime($id);
         return $response = new JsonResponse([]);
     }

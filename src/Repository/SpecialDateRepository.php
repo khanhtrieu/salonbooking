@@ -8,6 +8,7 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Entity\Shop;
+use Doctrine\ORM\Query\Expr;
 
 /**
  * @method SpecialDate|null find($id, $lockMode = null, $lockVersion = null)
@@ -64,6 +65,20 @@ class SpecialDateRepository extends ServiceEntityRepository {
         ;
 
         return $q->getQuery()->getArrayResult();
+    }
+
+    public function checkDateBookingInSpecialDate($shop_id, \DateTimeInterface $date) {
+        $qb = $this->createQueryBuilder('d');
+        $qb->select('d')
+                ->join('d.shop', 's', Expr\Join::WITH)
+                ->where($qb->expr()->eq('s.id', ':shop_id'))
+                ->andWhere($qb->expr()->gte('d.date', ':datefrom'))
+                ->andWhere($qb->expr()->lte('d.date', ':dateto'))
+                ->setParameter(':shop_id', $shop_id)
+                ->setParameter(':datefrom', $date->format('Y-m-d 00:00:00'))
+                ->setParameter(':dateto', $date->format('Y-m-d 23:59:59'))
+                ;
+        return $qb->getQuery()->getOneOrNullResult();
     }
 
     // /**

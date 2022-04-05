@@ -6,8 +6,11 @@ use App\Entity\Services;
 use App\Entity\Shop;
 use App\Entity\ShopService;
 use App\Entity\SpecialDate;
+use App\Entity\Customer;
+use App\Repository\CustomerRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -54,6 +57,36 @@ class ServiceController extends AbstractController {
         );
         return $response = new JsonResponse(['shop' => $shop, 'url' => $url]);
     }
+    /**
+     * @Route("/service/confirm", name="booking_confirm")
+     */
+    public function Confirm(ManagerRegistry $doctrine, CustomerRepository $customerRepository, SessionInterface $session): Response {
+        $shopName = $session->get('shopName');
+        $bookingDate = $session->get('bookingDate');
+        $bookingTime = $session->get('bookingTime');
+        $customerInfo = null;
+        if ($shopName == null || $bookingDate == null || $bookingTime == null){
+            $this->addFlash('error', 'Your appointment was not booked properly!');
+        }
+        // else{
+        //     $userid = $session->get('userid');
+        //     if ($userid <= 0) {
+        //         return $this->redirectToRoute('customer_login');
+        //     }
+        //     $customerInfo = $doctrine->getRepository(Customer::class)->findBy(['id' => $userid]);
+        // }
+        $userid = $session->get('userid');
+            if ($userid <= 0) {
+                return $this->redirectToRoute('customer_login');
+            }
+            $customerInfo = $doctrine->getRepository(Customer::class)->findBy(['id' => $userid]);
+        
+        //var_dump($customerInfo);
+        return $this->render('service/confirm.html.twig', [
+             'customer' => $customerInfo
+                //'Service: '.$service->getName()
+        ]);
+    }
 
     /**
      * @Route("/loadavaitime/", name="load_availabletime")
@@ -65,5 +98,13 @@ class ServiceController extends AbstractController {
         //$shop = $doctrine->getRepository(ShopService::class)->LoadAvaiTime($id);
         return $response = new JsonResponse([]);
     }
+    // private function getCustomer(CustomerRepository $customerRepository, SessionInterface $session) {
+    //     $userid = $session->get('userid');
+    //     $customer = null;
+    //     if (empty($userid) || ( $customer = $customerRepository->find($userid)) == null) {
+    //         return null;
+    //     }
+    //     return $customer;
+    // }
 
 }

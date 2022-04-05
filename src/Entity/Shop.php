@@ -85,7 +85,7 @@ class Shop
     private $Phone;
 
     /**
-     * @ORM\OneToMany(targetEntity=SpecialDate::class, mappedBy="shop_id")
+     * @ORM\OneToMany(targetEntity=SpecialDate::class, mappedBy="shop")
      */
     private $specialDates;
 

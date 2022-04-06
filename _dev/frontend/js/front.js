@@ -98,7 +98,9 @@ $(document).ready(function () {
 
         function selectRadio(obj) {
             $(obj).closest('.booking-column-wrapper').find('input[type="radio"]').removeAttr('checked');
+            $(obj).closest('.booking-column-wrapper').find('.card').removeClass('active');
             $(obj).find('input[type="radio"]').attr('checked', 'checked');
+            $(obj).addClass('active');
         }
         function activeSubmitButton() {
             let bookingshop = $('input[name="bookingshop"]:checked').val();

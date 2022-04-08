@@ -3,7 +3,7 @@
 {% block title %}Booking{% endblock %}
 
 {% block body %}
-    <form method="post" >
+    <form action="{{url('booking_appointment')}}" method="post" >
         <div class="row" id="booking">
             <div class="col-md-4 col-sm-12 booking-column-wrapper">
                 {% for shop in shops %}
@@ -20,7 +20,7 @@
             </div>
             <div class="col-md-3 col-sm-12 booking-column-wrapper" id="shop-products-column"></div>
             <div class="col-md-3 col-sm-12" id="work-calendar-column" data-refresh-url="{{ url('load_availabletime')}}">
-                <input type="text" id="datepicker" class="form-control d-none"/>
+                <input type="text" name="date" id="datepicker" class="form-control d-none"/>
             </div>
             <div class="col-md-2 col-sm-12 booking-column-wrapper" id="time-available-column"></div>
         </div>

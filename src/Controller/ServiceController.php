@@ -120,5 +120,60 @@ class ServiceController extends AbstractController {
             'timeavailable' => $rs
         ]);
     }
+    /**
+     * @Route("/service/confirm", name="booking_confirm")
+     */
+    public function Confirm(Request $request, ManagerRegistry $doctrine, CustomerRepository $customerRepository, SessionInterface $session): Response {
+        $booking = $session->get('booking');
+        $customerInfo = null;
+        
+        if ($booking == null){
+            $this->addFlash('error', 'Your appointment was not booked properly!');
+            return $this->redirectToRoute('app_shop');
+        }
+        $bookingshop = $booking['bookingshop'];
+        $bookingservice = $booking['bookingservice'];
+        $date = $booking['date'];
+        $bookingtime = $booking['bookingtime'];
+        $shopInfo = $doctrine->getRepository(Shop::class)->find($bookingshop);
+        
+        $userid = $session->get('userid');
+            if ($userid <= 0) {
+                return $this->redirectToRoute('customer_login');
+            }
+        $customerInfo = $doctrine->getRepository(Customer::class)->findBy(['id' => $userid]);
+
+        if ($request->getMethod() == "POST"){
+            $newAddress=$request->request->get('newAdress');
+            var_dump($newAddress);
+        }
+
+
+
+        
+        //var_dump($customerInfo);
+        return $this->render('service/confirm.html.twig', [
+             'customer' => $customerInfo
+                //'Service: '.$service->getName()
+        ]);
+    }
+    /**
+     * @Route("/service/appointment", name="booking_appointment")
+     */
+    public function Appointment(Request $request, ManagerRegistry $doctrine, CustomerRepository $customerRepository, SessionInterface $session): Response {
+        $bookingshop=$request->request->get('bookingshop');
+        $bookingservice=$request->request->get('bookingservice');
+        $date=$request->request->get('date');
+        $bookingtime=$request->request->get('bookingtime');
+
+        $session->set('booking', [
+            'bookingshop' => $bookingshop,
+            'bookingservice' => $bookingservice,
+            'date' => $date,
+            'bookingtime' => $bookingtime,
+        ]);
+        return $this->redirectToRoute('booking_confirm');
+
+    }
 
 }

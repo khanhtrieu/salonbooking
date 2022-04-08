@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Confirmation{% endblock %}
+
+{% block body %}
+    <br><br>
+    <h2>Confirm your booking</h2>
+    {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">
+                {{ message }}
+            </div>
+    {% endfor %}
+    <h5>Personal information: </h5>
+    <form action="{{ url('booking_confirm') }}" method="post">
+    <div class ="Info">
+        Full name: {{customer[0].firstname}} {{customer[0].lastname}}<br>
+        Address:
+        <input name ="newAdress" type ="text" size="50" value = '{{customer[0].address}}{{customer[0].address2}}, {{ customer[0].city }}, {{ customer[0].state }}, {{ customer[0].zipcode }}'>
+    </div>
+    <br>
+    <h5>Booking information: </h5>
+    <div class ="Info">
+        Store name: Mayuri Nails <br>
+        Address: 1234 Disney Road, Anaheim, CA 94512<br>
+        Selected services: Haircut<br>
+        Date: 04/18/2022<br>
+        Time: 10:00 AM <br>
+        Total: $25 <br>
+        <br>
+    </div>
+    <a class="btn btn-danger" href="{{ url('app_shop') }}" >
+    Go back
+    </a>
+    <button type="submit" class="btn btn-primary">Book your appointment</button>
+    </form>
+{% endblock %}

@@ -44,7 +44,7 @@ class BookingRepository extends ServiceEntityRepository {
     }
 
     public function getShopBookingByDate(int $shop_id, \DateTimeInterface $dateFrom, \DateTimeInterface $dateTo) {
-      
+
         $qb = $this->createQueryBuilder('b');
         $qb->select('b.start_time,b.end_time, b.date, sh.id')
                 ->leftJoin('b.ShopService', 's', Expr\Join::WITH)
@@ -56,7 +56,21 @@ class BookingRepository extends ServiceEntityRepository {
                 ->setParameter(':datefrom', $dateFrom->format('Y-m-d H:i:s'))
                 ->setParameter(':dateto', $dateTo->format('Y-m-d H:i:s'))
         ;
-       
+
+        return $qb->getQuery()->getArrayResult();
+    }
+
+    public function getCustomerBooking($customner_id) {
+        $qb = $this->createQueryBuilder('b');
+        $qb->select('b.id,b.start_time,b.end_time, b.date, sh.Name ShopName,sv.Name ServiceName')
+                ->leftJoin('b.ShopService', 's', Expr\Join::WITH)
+                ->leftJoin('s.Service','sv', Expr\Join::WITH)
+                ->leftJoin('s.Shop', 'sh', Expr\Join::WITH)
+                ->where($qb->expr()->eq('b.customer_id', ':customer_id'))
+                ->setParameter(':customer_id', $customner_id)
+                 ->orderBy('b.date', 'DESC')
+        ;
+
         return $qb->getQuery()->getArrayResult();
     }
 

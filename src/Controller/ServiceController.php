@@ -7,6 +7,8 @@ use App\Entity\Shop;
 use App\Entity\ShopService;
 use App\Entity\Booking;
 use App\Entity\SpecialDate;
+use App\Entity\Customer;
+use App\Form\CancelBookingForm;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Persistence\ManagerRegistry;
@@ -14,6 +16,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Helper\Tools;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ServiceController extends AbstractController {
 
@@ -48,10 +52,9 @@ class ServiceController extends AbstractController {
         }
         $url = $this->generateUrl('load_availabletime', array(
             'id_shop' => $id,
-           
                 )
         );
-        return $response = new JsonResponse(['id_shop' => $id,'shop' => $shop, 'url' => $url, 'skipdate' => $skipDates]);
+        return $response = new JsonResponse(['id_shop' => $id, 'shop' => $shop, 'url' => $url, 'skipdate' => $skipDates]);
     }
 
     /**
@@ -174,6 +177,34 @@ class ServiceController extends AbstractController {
         ]);
         return $this->redirectToRoute('booking_confirm');
 
+    }
+
+    /**
+     * @Route("/booking/cancel/{id}", name="booking_cancel",requirements={"id"="\d+"})
+     */
+    public function cancelBooking(int $id, SessionInterface $session, ManagerRegistry $doctrine, Request $request) : Response{
+        $userid = $session->get('userid');
+        $customer = null;
+        if (empty($userid) || ( $customer = $doctrine->getRepository(Customer::class)->find($userid)) == null) {
+            return $this->redirectToRoute('customer_login');
+        }
+
+        $booking = $doctrine->getRepository(Booking::class)->find($id);
+        if ($booking == null || $booking->getCustomerId() != $userid) {
+            throw $this->createNotFoundException('The product does not exist');
+        }
+        $form = $this->createForm(CancelBookingForm::class);
+        $form->get('bookingid')->setData($id);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $doctrine->getManager();
+            $entityManager->remove($booking);
+            $entityManager->flush();
+            return $this->redirectToRoute('booking_history');
+        }
+        return $this->render('service/confirm_cancel.html.twig', [
+                    'form' => $form->createView()
+        ]);
     }
 
 }

@@ -35,7 +35,6 @@ class UserAdmin extends AbstractAdmin {
         }
         $form->add('email', TextType::class);
         $form->add('plainPassword', PasswordType::class, ['mapped' => false, 'required' => $requirePassword]);
-
     }
 
     protected function configureDatagridFilters(DatagridMapper $datagrid): void {
@@ -59,6 +58,7 @@ class UserAdmin extends AbstractAdmin {
 
     protected function prePersist(object $object): void {
         $this->updateNewPassword($object);
+        $this->addAdminRole($object);
     }
 
     private function updateNewPassword(object $object) {
@@ -67,10 +67,16 @@ class UserAdmin extends AbstractAdmin {
         $encoder = $this->container->get('security.password_encoder');
         $encoded = $encoder->encodePassword($object, $plainPassword);
         $object->setPassword($encoded);
+        $this->addAdminRole($object);
     }
 
     public function setContainer(\Symfony\Component\DependencyInjection\ContainerInterface $container) {
         $this->container = $container;
+    }
+
+    private function addAdminRole(object $object): void {
+        $object->setRoles(["ROLE_SUPER_ADMIN",
+            "ROLE_SONATA_ADMIN"]);
     }
 
 }

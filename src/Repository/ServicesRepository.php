@@ -25,6 +25,15 @@ class ServicesRepository extends ServiceEntityRepository
                 ->where('s.Active = 1');
         return $rs->getQuery()->getArrayResult();
     }
+    
+    public function getListHomepageServiceActivated($max=3){
+        $rs = $this->createQueryBuilder('s')
+                ->select('s')
+                ->where('s.Active = 1')
+                ->setMaxResults($max)
+                ;
+        return $rs->getQuery()->getArrayResult();
+    }
 
     // /**
     //  * @return Services[] Returns an array of Services objects

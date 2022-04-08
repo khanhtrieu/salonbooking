@@ -9,6 +9,7 @@ use App\Entity\Booking;
 use App\Entity\SpecialDate;
 use App\Entity\Customer;
 use App\Form\CancelBookingForm;
+use App\Repository\CustomerRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Persistence\ManagerRegistry;
@@ -138,25 +139,51 @@ class ServiceController extends AbstractController {
         $bookingservice = $booking['bookingservice'];
         $date = $booking['date'];
         $bookingtime = $booking['bookingtime'];
+        $hourDigit = floor($bookingtime / 100);
+        $minDigit = $bookingtime % 100;
         $shopInfo = $doctrine->getRepository(Shop::class)->find($bookingshop);
         
         $userid = $session->get('userid');
             if ($userid <= 0) {
                 return $this->redirectToRoute('customer_login');
             }
-        $customerInfo = $doctrine->getRepository(Customer::class)->findBy(['id' => $userid]);
-
+        $customerInfo = $doctrine->getRepository(Customer::class)->find($userid);
+        //$firstname = $customerInfo.getFirstName();
+        var_dump($customerInfo);
         if ($request->getMethod() == "POST"){
             $newAddress=$request->request->get('newAdress');
-            var_dump($newAddress);
+            $newAddress2=$request->request->get('newAdress2');
+            $newCity=$request->request->get('newCity');
+            $newState=$request->request->get('newState');
+            $newZipcode=$request->request->get('newZipcode');
+
+            $entityManager = $doctrine->getManager();
+            $finalbooking = new Booking();
+            //$finalbooking->setDate('2022-01-01');
+            $finalbooking->setAddress($newAddress);
+            $finalbooking->setAddress2($newAddress2);
+            $finalbooking->setCity($newCity);
+            $finalbooking->setState($newState);
+            $finalbooking->setZipCode($newZipcode);
+            $finalbooking->setServiceType($bookingservice);
+            // $finalbooking->setCustomerName($customerInfo.getFirstName()+$customerInfo.getLastName());
+            // $finalbooking->setPhone($customerInfo.getPhone());
+            $finalbooking->setBookingStatus(1);
+            
+
+            $entityManager->persist($finalbooking);
+            $entityManager->flush();
+            return $this->redirectToRoute('booking_history');
+
         }
-
-
-
-        
         //var_dump($customerInfo);
         return $this->render('service/confirm.html.twig', [
-             'customer' => $customerInfo
+             'customer' => $customerInfo,
+             'shopInfo' => $shopInfo,
+             'bookingservice' => $bookingservice,
+             'date' => $date,
+             'minDigit' => $minDigit,
+             'hourDigit' => $hourDigit
                 //'Service: '.$service->getName()
         ]);
     }

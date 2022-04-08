@@ -60,11 +60,13 @@ class ServiceController extends AbstractController {
     /**
      * @Route("/service/confirm", name="booking_confirm")
      */
-    public function Confirm(ManagerRegistry $doctrine, CustomerRepository $customerRepository, SessionInterface $session): Response {
+    public function Confirm(Request $request, ManagerRegistry $doctrine, CustomerRepository $customerRepository, SessionInterface $session): Response {
+        
         $shopName = $session->get('shopName');
         $bookingDate = $session->get('bookingDate');
         $bookingTime = $session->get('bookingTime');
         $customerInfo = null;
+        
         if ($shopName == null || $bookingDate == null || $bookingTime == null){
             $this->addFlash('error', 'Your appointment was not booked properly!');
         }
@@ -79,8 +81,12 @@ class ServiceController extends AbstractController {
             if ($userid <= 0) {
                 return $this->redirectToRoute('customer_login');
             }
-            $customerInfo = $doctrine->getRepository(Customer::class)->findBy(['id' => $userid]);
-        
+        $customerInfo = $doctrine->getRepository(Customer::class)->findBy(['id' => $userid]);
+
+        if ($request->getMethod() == "POST"){
+            $newAddress=$request->request->get('newAdress');
+            var_dump($newAddress);
+        }
         //var_dump($customerInfo);
         return $this->render('service/confirm.html.twig', [
              'customer' => $customerInfo
@@ -98,13 +104,13 @@ class ServiceController extends AbstractController {
         //$shop = $doctrine->getRepository(ShopService::class)->LoadAvaiTime($id);
         return $response = new JsonResponse([]);
     }
-    // private function getCustomer(CustomerRepository $customerRepository, SessionInterface $session) {
-    //     $userid = $session->get('userid');
-    //     $customer = null;
-    //     if (empty($userid) || ( $customer = $customerRepository->find($userid)) == null) {
-    //         return null;
-    //     }
-    //     return $customer;
-    // }
+    private function getCustomer(CustomerRepository $customerRepository, SessionInterface $session) {
+        $userid = $session->get('userid');
+        $customer = null;
+        if (empty($userid) || ( $customer = $customerRepository->find($userid)) == null) {
+            return null;
+        }
+        return $customer;
+    }
 
 }

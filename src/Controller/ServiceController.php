@@ -124,75 +124,108 @@ class ServiceController extends AbstractController {
             'timeavailable' => $rs
         ]);
     }
+
     /**
      * @Route("/service/confirm", name="booking_confirm")
      */
     public function Confirm(Request $request, ManagerRegistry $doctrine, CustomerRepository $customerRepository, SessionInterface $session): Response {
         $booking = $session->get('booking');
+        $errors = [];
         $customerInfo = null;
-        
-        if ($booking == null){
+
+        if ($booking == null) {
             $this->addFlash('error', 'Your appointment was not booked properly!');
             return $this->redirectToRoute('app_shop');
         }
         $bookingshop = $booking['bookingshop'];
         $bookingservice = $booking['bookingservice'];
-        $date = $booking['date'];
+        $date = \DateTime::createFromFormat('m/d/Y', $booking['date']);
+        $date->setTime(0, 0, 0);
         $bookingtime = $booking['bookingtime'];
         $hourDigit = floor($bookingtime / 100);
         $minDigit = $bookingtime % 100;
         $shopInfo = $doctrine->getRepository(Shop::class)->find($bookingshop);
-        
+
         $userid = $session->get('userid');
-            if ($userid <= 0) {
-                return $this->redirectToRoute('customer_login');
-            }
+        if ($userid <= 0) {
+            return $this->redirectToRoute('customer_login');
+        }
         $customerInfo = $doctrine->getRepository(Customer::class)->find($userid);
         //$firstname = $customerInfo.getFirstName();
-        if ($request->getMethod() == "POST"){
-            $newAddress=$request->request->get('newAdress');
-            $newAddress2=$request->request->get('newAdress2');
-            $newCity=$request->request->get('newCity');
-            $newState=$request->request->get('newState');
-            $newZipcode=$request->request->get('newZipcode');
+        if ($request->getMethod() == "POST") {
 
-            $entityManager = $doctrine->getManager();
-            $finalbooking = new Booking();
-            //$finalbooking->setDate('2022-01-01');
-            $finalbooking->setAddress($newAddress);
-            $finalbooking->setAddress2($newAddress2);
-            $finalbooking->setCity($newCity);
-            $finalbooking->setState($newState);
-            $finalbooking->setZipCode($newZipcode);
-            $finalbooking->setServiceType($bookingservice);
-            $finalbooking->setCustomerName($customerInfo->getFirstName().$customerInfo->getLastName());
-            $finalbooking->setPhone($customerInfo->getPhone());
-            $finalbooking->setBookingStatus(1);
-            $entityManager->persist($finalbooking);
-            $entityManager->flush();
-            return $this->redirectToRoute('booking_history');
-
+            $newAddress = $request->request->get('newAdress');
+            $newAddress2 = $request->request->get('newAdress2');
+            $newCity = $request->request->get('newCity');
+            $newState = $request->request->get('newState');
+            $newZipcode = $request->request->get('newZipcode');
+            if (empty($newAddress)) {
+                $errors[] = "Address can not empty";
+            }
+            if (empty($newCity)) {
+                $errors[] = "City can not empty";
+            }
+            if (empty($newZipcode)) {
+                $errors[] = "Zipcode can not empty";
+            }
+            if (empty($newState)) {
+                $errors[] = "State can not empty";
+            }
+            if (empty($errors)) {
+                $entityManager = $doctrine->getManager();
+                $finalbooking = new Booking();
+                $finalbooking->setCustomerId($userid);
+                $finalbooking->setDate($date);
+                $finalbooking->setAddress($newAddress);
+                $finalbooking->setAddress2($newAddress2);
+                $finalbooking->setCity($newCity);
+                $finalbooking->setState($newState);
+                $finalbooking->setZipCode($newZipcode);
+                $finalbooking->setServiceType($bookingservice);
+                $finalbooking->setCustomerName($customerInfo->getFirstName() . $customerInfo->getLastName());
+                $finalbooking->setPhone($customerInfo->getPhone());
+                $finalbooking->setBookingStatus(1);
+                $entityManager->persist($finalbooking);
+                $entityManager->flush();
+                $session->remove('booking');
+                return $this->redirectToRoute('booking_history');
+            }
         }
         //var_dump($customerInfo);
         return $this->render('service/confirm.html.twig', [
-             'customer' => $customerInfo,
-             'shopInfo' => $shopInfo,
-             'bookingservice' => $bookingservice,
-             'date' => $date,
-             'minDigit' => $minDigit,
-             'hourDigit' => $hourDigit
-                //'Service: '.$service->getName()
+                    'customer' => $customerInfo,
+                    'shopInfo' => $shopInfo,
+                    'bookingservice' => $bookingservice,
+                    'date' => $date,
+                    'minDigit' => $minDigit,
+                    'hourDigit' => $hourDigit,
+                    'errors' => $errors
+                        //'Service: '.$service->getName()
         ]);
     }
+
     /**
      * @Route("/service/appointment", name="booking_appointment")
      */
     public function Appointment(Request $request, ManagerRegistry $doctrine, CustomerRepository $customerRepository, SessionInterface $session): Response {
-        $bookingshop=$request->request->get('bookingshop');
-        $bookingservice=$request->request->get('bookingservice');
-        $date=$request->request->get('date');
-        $bookingtime=$request->request->get('bookingtime');
-
+        $errors = [];
+        $bookingshop = $request->request->get('bookingshop');
+        $bookingservice = $request->request->get('bookingservice');
+        $date = $request->request->get('date');
+        $bookingtime = (int) $request->request->get('bookingtime');
+        $hours = floor($bookingtime / 100);
+        $min = $bookingtime % 100;
+        $dateObj = \DateTime::createFromFormat('m/d/Y', $date);
+        $dateObj->setTime($hours, $min);
+        $current = new \DateTime();
+        $current->modify('+30i');
+        if ($current > $dateObj) {
+            $errors[] = "Date Booking Invalid";
+        }
+        if (!empty($errors)) {
+            $this->addFlash('error', 'Your appointment was not booked properly!');
+            return $this->redirectToRoute('app_shop');
+        }
         $session->set('booking', [
             'bookingshop' => $bookingshop,
             'bookingservice' => $bookingservice,
@@ -200,13 +233,12 @@ class ServiceController extends AbstractController {
             'bookingtime' => $bookingtime,
         ]);
         return $this->redirectToRoute('booking_confirm');
-
     }
 
     /**
      * @Route("/booking/cancel/{id}", name="booking_cancel",requirements={"id"="\d+"})
      */
-    public function cancelBooking(int $id, SessionInterface $session, ManagerRegistry $doctrine, Request $request) : Response{
+    public function cancelBooking(int $id, SessionInterface $session, ManagerRegistry $doctrine, Request $request): Response {
         $userid = $session->get('userid');
         $customer = null;
         if (empty($userid) || ( $customer = $doctrine->getRepository(Customer::class)->find($userid)) == null) {

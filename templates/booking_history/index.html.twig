@@ -3,7 +3,7 @@
 {% block title %}Booking History{% endblock %}
 
 {% block body %}
-    <table class="table table-bordered">
+    <table class="table table-bordered table-striped table-hover">
         <thead>
             <tr>
                 <th>Date</th>
@@ -22,7 +22,7 @@
                         <td>{{ item["ShopName"] }}</td>
                         <td>{{ item["start_time"]|date("H:i") }}</td>
                         <td>
-                           
+
                             {% if item["date"]|date("Ymd") > "now"|date('Ymd') or (item["date"]|date("Ymd") == "now"|date('Ymd') and item["start_time"]|date("Hi")|number_format > "now"|date('Hi')|number_format) %}
                                 <a href="{{ url('booking_cancel',{id:item["id"]}) }}" class="btn btn-primary btn-sm">Cancel booking</a>
                             {% endif %}
@@ -31,9 +31,10 @@
                 {% endfor %}
             {% else %}
                 <tr>
-                    <td colspan="4"></td>
+                    <td colspan="5" class="text-center">N/A</td>
                 </tr>
             {% endif %}
         </tbody>
     </table>
+    <a href="{{ url('app_shop') }}" class="btn btn-outline-primary">Booking</a>
 {% endblock %}

@@ -149,7 +149,6 @@ class ServiceController extends AbstractController {
             }
         $customerInfo = $doctrine->getRepository(Customer::class)->find($userid);
         //$firstname = $customerInfo.getFirstName();
-        var_dump($customerInfo);
         if ($request->getMethod() == "POST"){
             $newAddress=$request->request->get('newAdress');
             $newAddress2=$request->request->get('newAdress2');
@@ -166,11 +165,9 @@ class ServiceController extends AbstractController {
             $finalbooking->setState($newState);
             $finalbooking->setZipCode($newZipcode);
             $finalbooking->setServiceType($bookingservice);
-            // $finalbooking->setCustomerName($customerInfo.getFirstName()+$customerInfo.getLastName());
-            // $finalbooking->setPhone($customerInfo.getPhone());
+            $finalbooking->setCustomerName($customerInfo->getFirstName().$customerInfo->getLastName());
+            $finalbooking->setPhone($customerInfo->getPhone());
             $finalbooking->setBookingStatus(1);
-            
-
             $entityManager->persist($finalbooking);
             $entityManager->flush();
             return $this->redirectToRoute('booking_history');

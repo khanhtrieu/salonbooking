@@ -154,11 +154,19 @@ class ServiceController extends AbstractController {
         //$firstname = $customerInfo.getFirstName();
         if ($request->getMethod() == "POST") {
 
+            $phone = $request->request->get('phone');
             $newAddress = $request->request->get('newAdress');
             $newAddress2 = $request->request->get('newAdress2');
             $newCity = $request->request->get('newCity');
             $newState = $request->request->get('newState');
             $newZipcode = $request->request->get('newZipcode');
+            if (empty($phone)) {
+                $errors[] = "Address can not empty";
+            } else {
+                if (!preg_match('/^[0-9]{10}+$/', $phone)) {
+                    $errors[] = "Invalid Phone Number";
+                }
+            }
             if (empty($newAddress)) {
                 $errors[] = "Address can not empty";
             }
@@ -183,7 +191,7 @@ class ServiceController extends AbstractController {
                 $finalbooking->setZipCode($newZipcode);
                 $finalbooking->setServiceType($bookingservice);
                 $finalbooking->setCustomerName($customerInfo->getFirstName() . $customerInfo->getLastName());
-                $finalbooking->setPhone($customerInfo->getPhone());
+                $finalbooking->setPhone($phone);
                 $finalbooking->setBookingStatus(1);
                 $entityManager->persist($finalbooking);
                 $entityManager->flush();

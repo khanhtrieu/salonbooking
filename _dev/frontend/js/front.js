@@ -1,6 +1,7 @@
 import 'bootstrap';
 import 'jquery';
 import 'jquery-ui';
+import './dist/owl.carousel.min.js';
 require('jquery-ui/ui/widgets/datepicker');
 $(document).ready(function () {
 
@@ -111,5 +112,17 @@ $(document).ready(function () {
                 $('#action-buttons').removeClass('d-none');
             }
         }
+    }
+    if ($('#homepage-slider').length > 0) {
+        $('#homepage-slider').owlCarousel({
+            margin: 10,
+            loop: true,
+            autoWidth: true,
+            items: 3,
+            autoplay: true,
+            autoplayTimeout: 5000,
+            dots: false
+        });
+
     }
 });
